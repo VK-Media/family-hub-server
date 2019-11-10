@@ -1,0 +1,17 @@
+{
+	"extends": [
+		"tslint:latest",
+		"tslint-config-prettier",
+		"tslint-plugin-prettier"
+	],
+	"rules": {
+		"no-submodule-imports": false,
+		"object-literal-sort-keys": false,
+		"member-ordering": false,
+		"member-access": false,
+		"curly": false,
+		"no-this-assignment": false,
+		"no-console": false,
+		"semicolon": false
+	}
+}

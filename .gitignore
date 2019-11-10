@@ -1,0 +1,22 @@
+# dependencies
+node_modules/
+
+# testing
+coverage/
+
+# production
+build/
+dist/
+
+# misc
+.DS_Store
+
+# environment
+.env
+
+# logs
+*.log
+
+# editor/ide
+.vscode
+.idea
