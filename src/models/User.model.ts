@@ -28,7 +28,7 @@ const UserSchema = new mongoose.Schema(
 		appMode: {
 			type: String,
 			enum: Object.keys(Mode),
-			default: Mode.AllAccess,
+			default: Mode.AllAccess.toString(),
 			required: true
 		},
 		profilePicturePath: {

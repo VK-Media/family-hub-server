@@ -3,8 +3,8 @@ import { Document, Types } from 'mongoose'
 import { IFamilyModel } from './Family.interfaces'
 
 export enum Mode {
-	AllAccess = 'ALL_ACCESS',
-	Child = 'CHILD_MODE'
+	AllAccess,
+	Child
 }
 
 export interface IUserModel extends Document {

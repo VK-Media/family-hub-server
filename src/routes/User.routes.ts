@@ -5,9 +5,7 @@ class UserRoutes {
 	private userController: UserController = new UserController()
 
 	public routes(app: Application): void {
-		app.route('/user')
-			.get(this.userController.getUsers)
-			.post(this.userController.addNewUser)
+		app.route('/user').post(this.userController.addNewUser)
 
 		app.route('/user/:userId')
 			.get(this.userController.getUserById)

@@ -2,18 +2,25 @@ import * as bodyParser from 'body-parser'
 import * as express from 'express'
 import { connect } from 'mongoose'
 
-import { UserRoutes } from './routes'
+import { EventRoutes, FamilyRoutes, RecipeRoutes, UserRoutes } from './routes'
 
 class App {
 	public app: express.Application
 	public mongoUrl: string = process.env.MONGODB_URL
 	public userRoutes: UserRoutes = new UserRoutes()
+	public familyRoutes: FamilyRoutes = new FamilyRoutes()
+	public eventRoutes: EventRoutes = new EventRoutes()
+	public recipeRoutes: RecipeRoutes = new RecipeRoutes()
 
 	constructor() {
 		this.app = express()
 		this.config()
 		this.mongoSetup()
+
 		this.userRoutes.routes(this.app)
+		this.familyRoutes.routes(this.app)
+		this.eventRoutes.routes(this.app)
+		this.recipeRoutes.routes(this.app)
 	}
 
 	private config(): void {
