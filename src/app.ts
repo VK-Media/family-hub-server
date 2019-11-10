@@ -31,7 +31,12 @@ class App {
 	}
 
 	private mongoSetup(): void {
-		connect(this.mongoUrl, { useNewUrlParser: true })
+		connect(this.mongoUrl, {
+			useNewUrlParser: true,
+			useUnifiedTopology: true,
+			useCreateIndex: true,
+			useFindAndModify: false
+		})
 	}
 }
 

@@ -34,8 +34,7 @@ const UserSchema = new mongoose.Schema(
 		profilePicturePath: {
 			type: String,
 			trim: true,
-			lowercase: true,
-			unique: true
+			lowercase: true
 		},
 		profileColor: {
 			type: String,
