@@ -3,7 +3,7 @@ import { sign } from 'jsonwebtoken'
 import * as mongoose from 'mongoose'
 import { isEmail, isHexColor } from 'validator'
 
-import { UserModel, Mode } from '../interfaces/User.interfaces'
+import { Mode, UserModel } from '../interfaces/User.interfaces'
 import { eventRefInDb } from './Event.model'
 import { familyRefInDb } from './Family.model'
 
@@ -28,7 +28,7 @@ const UserSchema = new mongoose.Schema(
 		appMode: {
 			type: String,
 			enum: Object.keys(Mode),
-			default: Mode.AllAccess.toString(),
+			default: Mode.AllAccess,
 			required: true
 		},
 		profilePicturePath: {

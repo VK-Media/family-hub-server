@@ -1,20 +1,19 @@
 import { Request, Response } from 'express'
-
 import { validationResult } from 'express-validator'
 import { Types } from 'mongoose'
+
 import {
 	CreateUserInput,
-	GetUserByIdInput
+	DeleteUserInput,
+	GetAllUsersInput,
+	GetUserByIdInput,
+	Mode,
+	UpdateUserInput
 } from '../interfaces/User.interfaces'
 import UserModel from '../models/User.model'
 
 class UserController {
 	public createUser = (req: CreateUserInput, res: Response) => {
-		const errors = validationResult(req)
-		if (!errors.isEmpty()) {
-			return res.status(422).json({ errors: errors.array() })
-		}
-
 		const user = new UserModel(req.body)
 
 		user.save()
@@ -26,18 +25,43 @@ class UserController {
 			})
 	}
 
+	public getAllUsers = async (req: GetAllUsersInput, res: Response) => {
+		const users = await UserModel.find()
+
+		res.send(users)
+	}
+
 	public getUserById = async (req: GetUserByIdInput, res: Response) => {
-		const userId = Types.ObjectId(req.params.userId)
-		const user = await UserModel.findOne({ _id: userId })
+		const user = await UserModel.findById(req.params.userId)
 		res.send(user)
 	}
 
-	public updateUser = (req: Request, res: Response) => {
-		//
+	public updateUser = async (req: UpdateUserInput, res: Response) => {
+		const user = await UserModel.findById(req.params.userId)
+		try {
+			if (req.body.name) user.name = req.body.name
+			if (req.body.email) user.email = req.body.email
+			if (req.body.password) user.password = req.body.password
+			if (req.body.profileColor) user.profileColor = req.body.profileColor
+			if (req.body.familyId)
+				user.family = Types.ObjectId(req.body.familyId)
+			if (req.body.appMode) user.appMode = Mode[req.body.appMode]
+		} catch (error) {
+			res.status(400).send(error.message)
+		}
+
+		user.save()
+			.then(() => {
+				res.send(user)
+			})
+			.catch((err: Error) => {
+				res.status(400).send(err.message)
+			})
 	}
 
-	public deleteUser = (req: Request, res: Response) => {
-		//
+	public deleteUser = async (req: DeleteUserInput, res: Response) => {
+		const user = await UserModel.findOneAndDelete(req.params.userId)
+		res.send(user)
 	}
 }
 
