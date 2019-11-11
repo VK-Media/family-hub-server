@@ -1,5 +1,5 @@
 import { Application } from 'express'
-import { EventController } from '../controllers/index'
+import { EventController } from '../controllers/Index'
 
 class UserRoutes {
 	private userController: EventController = new EventController()

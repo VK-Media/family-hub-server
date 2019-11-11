@@ -1,13 +1,13 @@
 import { Application } from 'express'
 
-import { UserController } from '../controllers/index'
+import { UserController } from '../controllers/Index'
 import {
 	createUserRules,
 	deleteUserRules,
 	getUserByIdRules,
 	updateUserRules
-} from '../validation/user.validation'
-import validate from '../validation/validator'
+} from '../validation/User.validation'
+import validate from '../validation/Validator'
 
 class UserRoutes {
 	private userController: UserController = new UserController()

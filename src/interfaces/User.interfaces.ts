@@ -1,6 +1,5 @@
-import { Document, Types } from 'mongoose'
-
 import { Request } from 'express'
+import { Document, Types } from 'mongoose'
 
 // NOTE: Be careful changing this as database is using it
 export enum Mode {
@@ -45,12 +44,12 @@ export interface GetUserByIdInput extends Request {
 
 export interface UpdateUserInput extends Request {
 	body: {
-		name?: string
-		email?: string
-		password?: string
-		profileColor?: string
-		familyId?: string
-		appMode?: Mode
+		newName?: string
+		newEmail?: string
+		newPassword?: string
+		newProfileColor?: string
+		newFamilyId?: string
+		newAppMode?: Mode
 	}
 	params: {
 		userId: string

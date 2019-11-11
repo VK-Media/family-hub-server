@@ -95,7 +95,6 @@ UserSchema.post(
 	'save',
 	(error: any, doc: UserModel, next: mongoose.HookNextFunction) => {
 		// TODO: - Determine error type
-		console.log(typeof error)
 
 		if (error.name === 'MongoError' && error.code === 11000) {
 			next(new Error('Email must be unique'))

@@ -2,7 +2,7 @@ import * as bodyParser from 'body-parser'
 import * as express from 'express'
 import { connect } from 'mongoose'
 
-import { EventRoutes, FamilyRoutes, RecipeRoutes, UserRoutes } from './routes'
+import { EventRoutes, FamilyRoutes, RecipeRoutes, UserRoutes } from './routes/Index'
 
 class App {
 	public app: express.Application

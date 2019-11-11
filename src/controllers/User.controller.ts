@@ -1,5 +1,4 @@
-import { Request, Response } from 'express'
-import { validationResult } from 'express-validator'
+import { Response } from 'express'
 import { Types } from 'mongoose'
 
 import {
@@ -39,13 +38,13 @@ class UserController {
 	public updateUser = async (req: UpdateUserInput, res: Response) => {
 		const user = await UserModel.findById(req.params.userId)
 		try {
-			if (req.body.name) user.name = req.body.name
-			if (req.body.email) user.email = req.body.email
-			if (req.body.password) user.password = req.body.password
-			if (req.body.profileColor) user.profileColor = req.body.profileColor
-			if (req.body.familyId)
-				user.family = Types.ObjectId(req.body.familyId)
-			if (req.body.appMode) user.appMode = Mode[req.body.appMode]
+			if (req.body.newName) user.name = req.body.newName
+			if (req.body.newEmail) user.email = req.body.newEmail
+			if (req.body.newPassword) user.password = req.body.newPassword
+			if (req.body.newProfileColor) user.profileColor = req.body.newProfileColor
+			if (req.body.newFamilyId)
+				user.family = Types.ObjectId(req.body.newFamilyId)
+			if (req.body.newAppMode) user.appMode = Mode[req.body.newAppMode]
 		} catch (error) {
 			res.status(400).send(error.message)
 		}

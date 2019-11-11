@@ -1,5 +1,5 @@
 import { Application } from 'express'
-import { RecipeController } from '../controllers/index'
+import { RecipeController } from '../controllers/Index'
 
 class RecipeRoutes {
 	private userController: RecipeController = new RecipeController()
