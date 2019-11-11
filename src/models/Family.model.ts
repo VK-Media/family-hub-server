@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose'
 
-import { IFamilyModel } from '../interfaces/Family.interfaces'
+import { FamilyModel } from '../interfaces/Family.interfaces'
 import { userRefInDb } from './User.model'
 
 const FamilySchema = new mongoose.Schema(
@@ -20,7 +20,7 @@ const FamilySchema = new mongoose.Schema(
 
 export const familyRefInDb: string = 'Family'
 
-export default mongoose.model<IFamilyModel>(
+export default mongoose.model<FamilyModel>(
 	familyRefInDb,
 	FamilySchema,
 	'Families'

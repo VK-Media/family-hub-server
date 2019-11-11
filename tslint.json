@@ -12,6 +12,7 @@
 		"curly": false,
 		"no-this-assignment": false,
 		"no-console": false,
-		"semicolon": false
+		"semicolon": false,
+		"interface-name": false
 	}
 }

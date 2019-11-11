@@ -1,9 +1,9 @@
 import { Document, Types } from 'mongoose'
 
-import { IUserModel } from './User.interfaces'
+import { UserModel } from './User.interfaces'
 
-export interface IFamilyModel extends Document {
+export interface FamilyModel extends Document {
 	_id: Types.ObjectId
 	familyName: string
-	members: IUserModel
+	members: UserModel
 }

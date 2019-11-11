@@ -3,7 +3,7 @@ import { sign } from 'jsonwebtoken'
 import * as mongoose from 'mongoose'
 import { isEmail, isHexColor } from 'validator'
 
-import { IUserModel, Mode } from '../interfaces/User.interfaces'
+import { UserModel, Mode } from '../interfaces/User.interfaces'
 import { eventRefInDb } from './Event.model'
 import { familyRefInDb } from './Family.model'
 
@@ -65,21 +65,21 @@ UserSchema.path('profileColor').validate((color: string) => {
 })
 
 UserSchema.methods.toJSON = function() {
-	const userObject: IUserModel = this.toObject()
+	const userObject: UserModel = this.toObject()
 	delete userObject.password
 	return userObject
 }
 
 UserSchema.methods.generateJWT = async function() {
-	const person: IUserModel = this
+	const person: UserModel = this
 	const token = sign({ _id: person._id.toString() }, process.env.JWT_SECRET)
 
 	return token
 }
 
 // Hash password before saving
-UserSchema.pre('save', function(this: IUserModel, next) {
-	const user: IUserModel = this
+UserSchema.pre('save', function(this: UserModel, next) {
+	const user: UserModel = this
 	const saltCycles = 8
 	if (user.isModified('password')) {
 		if (user.password.length < 8)
@@ -93,7 +93,7 @@ UserSchema.pre('save', function(this: IUserModel, next) {
 // Email uniqueness for proper error message
 UserSchema.post(
 	'save',
-	(error: any, doc: IUserModel, next: mongoose.HookNextFunction) => {
+	(error: any, doc: UserModel, next: mongoose.HookNextFunction) => {
 		// TODO: - Determine error type
 		console.log(typeof error)
 
@@ -107,4 +107,4 @@ UserSchema.post(
 
 export const userRefInDb: string = 'User'
 
-export default mongoose.model<IUserModel>(userRefInDb, UserSchema)
+export default mongoose.model<UserModel>(userRefInDb, UserSchema)

@@ -1,5 +1,5 @@
 import { Document, Types } from 'mongoose'
-import { IUserModel } from './User.interfaces'
+import { UserModel } from './User.interfaces'
 
 export enum WeekDays { // TODO: Find a more optimal way to do this
 	Monday = 'M',
@@ -18,7 +18,7 @@ export enum PeriodOption {
 	Yearly = 'Yearly'
 }
 
-export interface ITimeDetails {
+export interface TimeDetails {
 	startTime: Date
 	endTime?: Date // null for all-day option
 	repeat?: {
@@ -29,12 +29,12 @@ export interface ITimeDetails {
 	}
 }
 
-export interface IEventModel extends Document {
+export interface EventModel extends Document {
 	_id: Types.ObjectId
 	title: string
 	description: string
 	location?: string // TODO - Own model perhaps
-	timeDetails: ITimeDetails
+	timeDetails: TimeDetails
 	alert?: Date
-	participants: IUserModel
+	participants: UserModel
 }

@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose'
 
 import {
-	IEventModel,
+	EventModel,
 	PeriodOption,
 	WeekDays
 } from '../interfaces/Event.interfaces'
@@ -60,4 +60,4 @@ const EventSchema = new mongoose.Schema(
 
 export const eventRefInDb: string = 'Event'
 
-export default mongoose.model<IEventModel>(eventRefInDb, EventSchema)
+export default mongoose.model<EventModel>(eventRefInDb, EventSchema)

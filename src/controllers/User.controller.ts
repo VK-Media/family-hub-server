@@ -1,11 +1,19 @@
 import { Request, Response } from 'express'
 
+import { validationResult } from 'express-validator'
 import { Types } from 'mongoose'
+import {
+	CreateUserInput,
+	GetUserByIdInput
+} from '../interfaces/User.interfaces'
 import UserModel from '../models/User.model'
 
 class UserController {
-	public addNewUser = (req: Request, res: Response) => {
-		console.log(req.body)
+	public createUser = (req: CreateUserInput, res: Response) => {
+		const errors = validationResult(req)
+		if (!errors.isEmpty()) {
+			return res.status(422).json({ errors: errors.array() })
+		}
 
 		const user = new UserModel(req.body)
 
@@ -18,17 +26,10 @@ class UserController {
 			})
 	}
 
-	public getUserById = (req: Request, res: Response) => {
-		try {
-			const userId = Types.ObjectId(req.params.userId)
-			console.log(userId)
-			const user = UserModel.findById((id: Types.ObjectId) =>
-				id.equals(userId)
-			)
-			res.send(user)
-		} catch (error) {
-			res.status(400).send('Invalid userId')
-		}
+	public getUserById = async (req: GetUserByIdInput, res: Response) => {
+		const userId = Types.ObjectId(req.params.userId)
+		const user = await UserModel.findOne({ _id: userId })
+		res.send(user)
 	}
 
 	public updateUser = (req: Request, res: Response) => {
