@@ -33,20 +33,24 @@ export const getUserByIdRules = () => {
 export const updateUserRules = () => {
 	return [
 		check('userId').isMongoId(),
-		check('email')
+		check('newName')
+			.optional()
+			.isLength({ min: 3 })
+			.withMessage('Minimum length of 3 characters'),
+		check('newEmail')
 			.optional()
 			.isEmail(),
-		check('password')
+		check('newPassword')
 			.optional()
 			.isLength({ min: 8, max: 100 })
 			.withMessage('Minimum length of 8 characters and max of 100'),
-		check('profileColor')
+		check('newProfileColor')
 			.optional()
 			.isHexColor(),
-		check('familyId')
+		check('newFamilyId')
 			.optional()
 			.isMongoId(),
-		check('appMode')
+		check('newAppMode')
 			.optional()
 			.isIn(Object.keys(Mode))
 			.withMessage('Invalid value. Options include: ' + Object.keys(Mode))

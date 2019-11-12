@@ -1,10 +1,29 @@
 import { Request, Response } from 'express'
 
-import EventModel from '../models/Event.model'
+import { CreateEventInput } from '../interfaces/Event.interfaces'
+import { EventModel } from '../models/index'
+import { usersExist } from '../util/Models.util'
 
 class EventController {
-	public createEvent = (req: Request, res: Response) => {
-		//
+	public createEvent = async (req: CreateEventInput, res: Response) => {
+		const participantsExist = await usersExist(req.body.participants)
+
+		if (!participantsExist) {
+			return res
+				.status(400)
+				.send('Some or more participants does not exist')
+		}
+
+		const event = new EventModel(req.body)
+
+		event
+			.save()
+			.then(() => {
+				res.status(201).send(event)
+			})
+			.catch((err: Error) => {
+				res.status(400).send(err.message)
+			})
 	}
 
 	public getEvents = (req: Request, res: Response) => {

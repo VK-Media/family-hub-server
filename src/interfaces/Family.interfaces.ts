@@ -28,20 +28,12 @@ export interface GetFamilyByIdInput extends Request {
 export interface UpdateFamilyInput extends Request {
 	body: {
 		newFamilyName?: string
+		newFamilyMemberId?: string
 	}
 	params: {
 		familyId: string
 	}
 	// TODO: Profile picture form input, make to a url and then add to UserModel
-}
-
-export interface AddFamilyMemberInput extends Request {
-	body: {
-		newFamilyMemberId: string
-	}
-	params: {
-		familyId: string
-	}
 }
 
 export interface DeleteFamilyInput extends Request {

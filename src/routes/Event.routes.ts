@@ -1,5 +1,8 @@
 import { Application } from 'express'
+
 import { EventController } from '../controllers/Index'
+import { createEventRules } from '../validation/Event.validation'
+import validate from '../validation/Validator'
 
 class UserRoutes {
 	private userController: EventController = new EventController()
@@ -7,7 +10,7 @@ class UserRoutes {
 	public routes(app: Application): void {
 		app.route('/event')
 			.get(this.userController.getEvents)
-			.post(this.userController.createEvent)
+			.post(createEventRules(), validate, this.userController.createEvent)
 
 		app.route('/event/:eventId')
 			.get(this.userController.getEventById)

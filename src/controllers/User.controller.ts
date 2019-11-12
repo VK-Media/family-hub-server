@@ -10,9 +10,9 @@ import {
 	Mode,
 	UpdateUserInput
 } from '../interfaces/User.interfaces'
-import UserModel from '../models/User.model'
-
 import FamilyModel from '../models/Family.model'
+import UserModel from '../models/User.model'
+import { familyExist } from '../util/Models.util'
 
 class UserController {
 	public createUser = (req: CreateUserInput, res: Response) => {
@@ -42,12 +42,19 @@ class UserController {
 		const user = await UserModel.findById(req.params.userId)
 		try {
 			if (req.body.newName) user.name = req.body.newName
+
 			if (req.body.newEmail) user.email = req.body.newEmail
+
 			if (req.body.newPassword) user.password = req.body.newPassword
+
 			if (req.body.newProfileColor)
 				user.profileColor = req.body.newProfileColor
-			if (req.body.newFamilyId)
-				user.family = Types.ObjectId(req.body.newFamilyId)
+
+			if (req.body.newFamilyId) {
+				if (familyExist(req.body.newFamilyId)) {
+					user.family = Types.ObjectId(req.body.newFamilyId)
+				}
+			}
 			if (req.body.newAppMode) user.appMode = Mode[req.body.newAppMode]
 		} catch (error) {
 			res.status(400).send(error.message)

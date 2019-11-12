@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-import { familyRef, recipeRef } from '../util/DbModelsRef'
+import { familyRef, recipeRef } from '../util/ModelRef.util'
 
 const RecipeSchema = new mongoose.Schema({
 	title: {

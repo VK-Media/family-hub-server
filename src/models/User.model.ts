@@ -4,7 +4,7 @@ import mongoose from 'mongoose'
 import { isEmail, isHexColor } from 'validator'
 
 import { Mode, UserModel } from '../interfaces/User.interfaces'
-import { eventRef, familyRef, userRef } from '../util/DbModelsRef'
+import { eventRef, familyRef, userRef } from '../util/ModelRef.util'
 
 const UserSchema = new mongoose.Schema(
 	{

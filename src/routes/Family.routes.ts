@@ -2,7 +2,6 @@ import { Application } from 'express'
 
 import { FamilyController } from '../controllers/Index'
 import {
-	addNewFamilyMemberRules,
 	createFamilyRules,
 	deleteFamilyByIdRules,
 	getFamilyByIdRules,
@@ -38,12 +37,6 @@ class UserRoutes {
 				validate,
 				this.familyController.deleteFamily
 			)
-
-		app.route('/family/addMember/:familyId').patch(
-			addNewFamilyMemberRules(),
-			validate,
-			this.familyController.addFamilyMember
-		)
 	}
 }
 

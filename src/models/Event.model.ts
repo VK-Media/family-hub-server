@@ -5,7 +5,7 @@ import {
 	PeriodOption,
 	WeekDays
 } from '../interfaces/Event.interfaces'
-import { eventRef, userRef } from '../util/DbModelsRef'
+import { eventRef, userRef } from '../util/ModelRef.util'
 
 const EventSchema = new mongoose.Schema(
 	{
@@ -38,9 +38,10 @@ const EventSchema = new mongoose.Schema(
 					],
 					frequency: {
 						type: String,
-						enum: Object.keys(PeriodOption)
+						enum: Object.keys(PeriodOption),
+						required: true
 					},
-					everyPeriod: { type: Number },
+					everyFrequency: { type: Number, required: true },
 					endRepeat: { type: Date }
 				}
 			},
