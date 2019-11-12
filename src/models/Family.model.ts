@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose'
+import mongoose from 'mongoose'
 
 import { FamilyModel } from '../interfaces/Family.interfaces'
-import { userRefInDb } from './User.model'
+import { familyRef, userRef } from '../util/DbModelsRef'
 
 const FamilySchema = new mongoose.Schema(
 	{
@@ -11,9 +11,7 @@ const FamilySchema = new mongoose.Schema(
 			trim: true,
 			maxlength: 20
 		},
-		members: [
-			{ type: mongoose.Types.ObjectId, ref: userRefInDb, unique: true }
-		]
+		members: [{ type: mongoose.Types.ObjectId, ref: userRef, unique: true }]
 	},
 	{
 		timestamps: true
@@ -45,10 +43,4 @@ FamilySchema.post(
 	}
 )
 
-export const familyRefInDb: string = 'Family'
-
-export default mongoose.model<FamilyModel>(
-	familyRefInDb,
-	FamilySchema,
-	'families'
-)
+export default mongoose.model<FamilyModel>(familyRef, FamilySchema, 'families')

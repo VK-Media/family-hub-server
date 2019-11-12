@@ -62,3 +62,9 @@ export interface DeleteUserInput extends Request {
 		userId: string
 	}
 }
+
+export interface GetUserFamilyInput extends Request {
+	params: {
+		userId: string
+	}
+}

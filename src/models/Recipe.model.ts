@@ -1,5 +1,6 @@
-import * as mongoose from 'mongoose'
-import { familyRefInDb } from './Family.model'
+import mongoose from 'mongoose'
+
+import { familyRef, recipeRef } from '../util/DbModelsRef'
 
 const RecipeSchema = new mongoose.Schema({
 	title: {
@@ -11,9 +12,7 @@ const RecipeSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	family: { type: mongoose.Types.ObjectId, ref: familyRefInDb }
+	family: { type: mongoose.Types.ObjectId, ref: familyRef }
 })
 
-export const recipeRefInDb = 'Recipe'
-
-export default mongoose.model(recipeRefInDb, RecipeSchema)
+export default mongoose.model(recipeRef, RecipeSchema)

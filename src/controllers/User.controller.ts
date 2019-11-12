@@ -6,10 +6,13 @@ import {
 	DeleteUserInput,
 	GetAllUsersInput,
 	GetUserByIdInput,
+	GetUserFamilyInput,
 	Mode,
 	UpdateUserInput
 } from '../interfaces/User.interfaces'
 import UserModel from '../models/User.model'
+
+import FamilyModel from '../models/Family.model'
 
 class UserController {
 	public createUser = (req: CreateUserInput, res: Response) => {
@@ -41,7 +44,8 @@ class UserController {
 			if (req.body.newName) user.name = req.body.newName
 			if (req.body.newEmail) user.email = req.body.newEmail
 			if (req.body.newPassword) user.password = req.body.newPassword
-			if (req.body.newProfileColor) user.profileColor = req.body.newProfileColor
+			if (req.body.newProfileColor)
+				user.profileColor = req.body.newProfileColor
 			if (req.body.newFamilyId)
 				user.family = Types.ObjectId(req.body.newFamilyId)
 			if (req.body.newAppMode) user.appMode = Mode[req.body.newAppMode]
@@ -61,6 +65,14 @@ class UserController {
 	public deleteUser = async (req: DeleteUserInput, res: Response) => {
 		const user = await UserModel.findOneAndDelete(req.params.userId)
 		res.send(user)
+	}
+
+	public getUserFamily = async (req: GetUserFamilyInput, res: Response) => {
+		const userFamily = await FamilyModel.findOne({
+			members: req.params.userId
+		})
+
+		res.send(userFamily)
 	}
 }
 

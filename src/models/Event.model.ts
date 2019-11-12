@@ -1,11 +1,11 @@
-import * as mongoose from 'mongoose'
+import mongoose from 'mongoose'
 
 import {
 	EventModel,
 	PeriodOption,
 	WeekDays
 } from '../interfaces/Event.interfaces'
-import { userRefInDb } from './User.model'
+import { eventRef, userRef } from '../util/DbModelsRef'
 
 const EventSchema = new mongoose.Schema(
 	{
@@ -49,15 +49,11 @@ const EventSchema = new mongoose.Schema(
 		alert: {
 			type: Date
 		},
-		participants: [
-			{ type: mongoose.Schema.Types.ObjectId, ref: userRefInDb }
-		]
+		participants: [{ type: mongoose.Schema.Types.ObjectId, ref: userRef }]
 	},
 	{
 		timestamps: true
 	}
 )
 
-export const eventRefInDb: string = 'Event'
-
-export default mongoose.model<EventModel>(eventRefInDb, EventSchema)
+export default mongoose.model<EventModel>(eventRef, EventSchema)

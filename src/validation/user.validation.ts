@@ -56,3 +56,7 @@ export const updateUserRules = () => {
 export const deleteUserRules = () => {
 	return [check('userId').isMongoId()]
 }
+
+export const getUserFamilyRules = () => {
+	return [check('userId').isMongoId()]
+}

@@ -1,0 +1,122 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"version": "1.0.0",
+		"title": "Internal Family Hub API Documentation",
+		"description": "Documentation for all the endpoints for use at VK-media (Family-Hub-Server)",
+		"contact": {
+			"name": "Robin Louis van Komen",
+			"email": "kontakt@vkmedia.com",
+			"url": "https://www.vkmedia.dk"
+		}
+	},
+	"servers": [
+		{
+			"url": "http://localhost:5000",
+			"description": "In development"
+		}
+	],
+	"tags": [
+		{
+			"name": "User",
+			"description": "Endpoints for User ressource"
+		}
+	],
+	"paths": {
+		"/user": {
+			"get": {
+				"tags": ["User"],
+				"description": "Get all users",
+				"operationId": "getUsers",
+				"responses": {
+					"200": {
+						"description": "Users were obtained",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Users"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Missing parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"message": "companyId is missing",
+									"internal_code": "missing_parameters"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"email": {
+				"type": "string",
+				"description": "Email",
+				"example": "example@test.com"
+			},
+			"userId": {
+				"type": "string",
+				"description": "mongoDb ID",
+				"example": "5dc99a3341a38347f40009c4"
+			},
+			"identificationNumber": {
+				"type": "integer",
+				"description": "User identification number",
+				"example": 1234
+			},
+			"username": {
+				"type": "string",
+				"example": "raparicio"
+			},
+			"userType": {
+				"type": "string"
+			},
+			"User": {
+				"type": "object",
+				"properties": {
+					"identificationNumber": {
+						"$ref": "#/components/schemas/identificationNumber"
+					},
+					"username": {
+						"$ref": "#/components/schemas/username"
+					},
+					"userType": {
+						"$ref": "#/components/schemas/userType"
+					}
+				}
+			},
+			"Users": {
+				"type": "object",
+				"properties": {
+					"users": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/User"
+						}
+					}
+				}
+			},
+			"Error": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"internal_code": {
+						"type": "string"
+					}
+				}
+			}
+		}
+	}
+}

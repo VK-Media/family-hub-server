@@ -5,6 +5,7 @@ import {
 	createUserRules,
 	deleteUserRules,
 	getUserByIdRules,
+	getUserFamilyRules,
 	updateUserRules
 } from '../validation/User.validation'
 import validate from '../validation/Validator'
@@ -21,6 +22,13 @@ class UserRoutes {
 			.get(getUserByIdRules(), validate, this.userController.getUserById)
 			.patch(updateUserRules(), validate, this.userController.updateUser)
 			.delete(deleteUserRules(), validate, this.userController.deleteUser)
+
+		app.get(
+			'/user/:userId/family',
+			getUserFamilyRules(),
+			validate,
+			this.userController.getUserFamily
+		)
 	}
 }
 

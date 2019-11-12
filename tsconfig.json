@@ -6,7 +6,9 @@
 		"sourceMap": false,
 		"target": "es5",
 		"outDir": "./build",
-		"baseUrl": "./"
+		"baseUrl": "./",
+		"resolveJsonModule": true,
+		"esModuleInterop": true
 	},
 	"include": ["**/*.ts"],
 	"exclude": ["node_modules"]

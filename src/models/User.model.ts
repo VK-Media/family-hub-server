@@ -1,11 +1,10 @@
 import { hashSync } from 'bcrypt'
 import { sign } from 'jsonwebtoken'
-import * as mongoose from 'mongoose'
+import mongoose from 'mongoose'
 import { isEmail, isHexColor } from 'validator'
 
 import { Mode, UserModel } from '../interfaces/User.interfaces'
-import { eventRefInDb } from './Event.model'
-import { familyRefInDb } from './Family.model'
+import { eventRef, familyRef, userRef } from '../util/DbModelsRef'
 
 const UserSchema = new mongoose.Schema(
 	{
@@ -43,11 +42,11 @@ const UserSchema = new mongoose.Schema(
 			required: true,
 			default: '#808080'
 		},
-		family: { type: mongoose.Types.ObjectId, ref: familyRefInDb },
+		family: { type: mongoose.Types.ObjectId, ref: familyRef },
 		events: [
 			{
 				type: mongoose.Types.ObjectId,
-				ref: eventRefInDb
+				ref: eventRef
 			}
 		]
 	},
@@ -104,6 +103,4 @@ UserSchema.post(
 	}
 )
 
-export const userRefInDb: string = 'User'
-
-export default mongoose.model<UserModel>(userRefInDb, UserSchema)
+export default mongoose.model<UserModel>(userRef, UserSchema)

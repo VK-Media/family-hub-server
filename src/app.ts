@@ -1,8 +1,15 @@
-import * as bodyParser from 'body-parser'
-import * as express from 'express'
+import bodyParser from 'body-parser'
+import express from 'express'
 import { connect } from 'mongoose'
+import swaggerUi from 'swagger-ui-express'
+import swaggerDocument from './swagger.json'
 
-import { EventRoutes, FamilyRoutes, RecipeRoutes, UserRoutes } from './routes/Index'
+import {
+	EventRoutes,
+	FamilyRoutes,
+	RecipeRoutes,
+	UserRoutes
+} from './routes/Index'
 
 class App {
 	public app: express.Application
@@ -35,6 +42,12 @@ class App {
 			res.header('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE')
 			next()
 		})
+
+		this.app.use(
+			'/api/documentation',
+			swaggerUi.serve,
+			swaggerUi.setup(swaggerDocument)
+		)
 	}
 
 	private mongoSetup(): void {
