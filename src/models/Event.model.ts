@@ -5,19 +5,24 @@ import {
 	PeriodOption,
 	WeekDays
 } from '../interfaces/Event.interfaces'
-import { eventRef, userRef } from '../util/ModelRef.util'
+import {
+	eventDescriptionMaxLength,
+	eventRef,
+	eventTitleMaxLength,
+	userRef
+} from '../util/Schemas.util'
 
 const EventSchema = new mongoose.Schema(
 	{
 		title: {
 			type: String,
-			maxlength: 20,
+			maxlength: eventTitleMaxLength,
 			required: true,
 			trim: true
 		},
 		description: {
 			type: String,
-			maxlength: 750,
+			maxlength: eventDescriptionMaxLength,
 			default: ''
 		},
 		location: {

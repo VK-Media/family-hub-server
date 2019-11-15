@@ -38,11 +38,16 @@ class FamilyController {
 	public getFamilyById = async (req: GetFamilyByIdInput, res: Response) => {
 		const family = await FamilyModel.findById(req.params.familyId)
 
+		if (!family) res.status(404).send()
+
 		res.send(family)
 	}
 
 	public updateFamily = async (req: UpdateFamilyInput, res: Response) => {
 		const family = await FamilyModel.findById(req.params.familyId)
+
+		if (!family) return res.status(404).send()
+
 		try {
 			if (req.body.newFamilyName) family.name = req.body.newFamilyName
 			if (req.body.newFamilyMemberId) {
@@ -66,7 +71,10 @@ class FamilyController {
 	}
 
 	public deleteFamily = async (req: DeleteFamilyInput, res: Response) => {
-		const family = await FamilyModel.findOneAndDelete(req.params.familyId)
+		const family = await FamilyModel.findByIdAndDelete(req.params.familyId)
+
+		if (!family) res.status(404).send()
+
 		res.send(family)
 	}
 }

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 import { FamilyModel } from '../interfaces/Family.interfaces'
-import { familyRef, userRef } from '../util/ModelRef.util'
+import { familyRef, userRef } from '../util/Schemas.util'
 
 const FamilySchema = new mongoose.Schema(
 	{

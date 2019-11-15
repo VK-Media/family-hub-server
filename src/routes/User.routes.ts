@@ -29,6 +29,8 @@ class UserRoutes {
 			validate,
 			this.userController.getUserFamily
 		)
+
+		app.get('/yser/:userId/events')
 	}
 }
 

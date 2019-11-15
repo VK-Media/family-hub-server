@@ -37,7 +37,7 @@ export interface EventModel extends Document {
 	location?: string // TODO - Own model perhaps
 	timeDetails: TimeDetails
 	alert?: Date
-	participants: [UserModel]
+	participants: Types.ObjectId[]
 }
 
 export interface CreateEventInput extends Request {
@@ -47,6 +47,37 @@ export interface CreateEventInput extends Request {
 		location?: string
 		timeDetails: TimeDetails
 		alert?: Date
-		participants: [string]
+		participants: string[]
+	}
+}
+
+// tslint:disable-next-line: no-empty-interface
+export interface GetEventInput extends Request {
+	// TODO: Security
+}
+
+export interface GetEventByIdInput extends Request {
+	params: {
+		eventId: string
+	}
+}
+
+export interface UpdateEventInput extends Request {
+	params: {
+		eventId: string
+	}
+	body: {
+		title?: string
+		description?: string
+		location?: string
+		timeDetails?: TimeDetails
+		alert?: Date
+		participants?: string[]
+	}
+}
+
+export interface DeleteEventInput extends Request {
+	params: {
+		eventId: string
 	}
 }

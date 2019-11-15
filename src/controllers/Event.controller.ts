@@ -1,6 +1,13 @@
-import { Request, Response } from 'express'
+import { Response } from 'express'
+import { Types } from 'mongoose'
 
-import { CreateEventInput } from '../interfaces/Event.interfaces'
+import {
+	CreateEventInput,
+	DeleteEventInput,
+	GetEventByIdInput,
+	GetEventInput,
+	UpdateEventInput
+} from '../interfaces/Event.interfaces'
 import { EventModel } from '../models/index'
 import { usersExist } from '../util/Models.util'
 
@@ -26,20 +33,57 @@ class EventController {
 			})
 	}
 
-	public getEvents = (req: Request, res: Response) => {
-		//
+	public getEvents = async (req: GetEventInput, res: Response) => {
+		const events = await EventModel.find()
+
+		res.send(events)
 	}
 
-	public getEventById = (req: Request, res: Response) => {
-		//
+	public getEventById = async (req: GetEventByIdInput, res: Response) => {
+		const event = await EventModel.findById(req.params.eventId)
+
+		if (!event) return res.status(404).send()
+
+		res.send(event)
 	}
 
-	public updateEvent = (req: Request, res: Response) => {
-		//
+	public updateEvent = async (req: UpdateEventInput, res: Response) => {
+		const event = await EventModel.findById(req.params.eventId)
+
+		if (!event) return res.status(404).send()
+
+		if (req.body.title) event.title = req.body.title
+		if (req.body.description) event.description = req.body.description
+		if (req.body.location) event.location = req.body.location
+		if (req.body.timeDetails) event.timeDetails = req.body.timeDetails // TODO: Decide whether or not it should override eventDetails or not
+		if (req.body.alert) event.alert = req.body.alert
+		if (req.body.participants) {
+			const participantsExist = await usersExist(req.body.participants)
+			if (participantsExist) {
+				const participantIds: Types.ObjectId[] = req.body.participants.map(
+					(participantId: string) => Types.ObjectId(participantId)
+				)
+
+				event.participants = participantIds
+			}
+		}
+
+		event
+			.save()
+			.then(() => {
+				res.send(event)
+			})
+			.catch((err: Error) => {
+				res.status(400).send(err.message)
+			})
 	}
 
-	public deleteEvent = (req: Request, res: Response) => {
-		//
+	public deleteEvent = async (req: DeleteEventInput, res: Response) => {
+		const event = await EventModel.findByIdAndDelete(req.params.eventId)
+
+		if (!event) return res.status(404).send()
+
+		res.status(404).send()
 	}
 }
 

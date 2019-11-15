@@ -8,7 +8,7 @@ export const familyExist = async (familyId: string) => {
 	return (await FamilyModel.findById(familyId)) ? true : false
 }
 
-export const usersExist = async (userIds: [string]) => {
+export const usersExist = async (userIds: string[]) => {
 	let allUsersExist: boolean = true
 
 	await new Promise((resolve, reject) => {
