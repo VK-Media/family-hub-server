@@ -22,7 +22,23 @@ export const createUserRules = () => {
 			.withMessage('Minimum length of 8 characters and max of 100'),
 		check('profileColor')
 			.optional()
-			.isHexColor()
+			.isHexColor(),
+		check('familyId')
+			.optional()
+			.isMongoId()
+	]
+}
+
+export const getAllUsersRules = () => {
+	return [
+		check('includeFamily')
+			.optional()
+			.isBoolean()
+			.withMessage('Must be true or false'),
+		check('includeEvents')
+			.optional()
+			.isBoolean()
+			.withMessage('Must be true or false')
 	]
 }
 
@@ -62,5 +78,9 @@ export const deleteUserRules = () => {
 }
 
 export const getUserFamilyRules = () => {
+	return [check('userId').isMongoId()]
+}
+
+export const getUserEventsRules = () => {
 	return [check('userId').isMongoId()]
 }

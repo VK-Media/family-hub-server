@@ -3,8 +3,9 @@ import { sign } from 'jsonwebtoken'
 import mongoose from 'mongoose'
 import { isEmail, isHexColor } from 'validator'
 
-import { Mode, UserModel } from '../interfaces/User.interfaces'
+import { IUserModel, Mode } from '../interfaces/User.interfaces'
 import { eventRef, familyRef, userRef } from '../util/Schemas.util'
+import FamilyModel from './Family.model'
 
 const UserSchema = new mongoose.Schema(
 	{
@@ -64,21 +65,22 @@ UserSchema.path('profileColor').validate((color: string) => {
 })
 
 UserSchema.methods.toJSON = function() {
-	const userObject: UserModel = this.toObject()
+	const userObject: IUserModel = this.toObject()
 	delete userObject.password
+	delete userObject.__v
 	return userObject
 }
 
 UserSchema.methods.generateJWT = async function() {
-	const person: UserModel = this
+	const person: IUserModel = this
 	const token = sign({ _id: person._id.toString() }, process.env.JWT_SECRET)
 
 	return token
 }
 
 // Hash password before saving
-UserSchema.pre('save', function(this: UserModel, next) {
-	const user: UserModel = this
+UserSchema.pre('save', function(this: IUserModel, next) {
+	const user: IUserModel = this
 	const saltCycles = 8
 	if (user.isModified('password')) {
 		if (user.password.length < 8)
@@ -89,10 +91,25 @@ UserSchema.pre('save', function(this: UserModel, next) {
 	next()
 })
 
+UserSchema.pre('findOneAndRemove', async function(this: IUserModel, next) {
+	// TODO: Remove family and events when user is removed, and also when events or family is deleted remove them from users
+	const userToRemove: IUserModel = this
+	console.log(userToRemove.family)
+
+	const family = await FamilyModel.findById(userToRemove.family)
+	console.log(family)
+
+	if (family) {
+		family.members.filter(memerId => memerId !== userToRemove._id)
+		console.log(family.members)
+	}
+	next()
+})
+
 // Email uniqueness for proper error message
 UserSchema.post(
 	'save',
-	(error: any, doc: UserModel, next: mongoose.HookNextFunction) => {
+	(error: any, doc: IUserModel, next: mongoose.HookNextFunction) => {
 		// TODO: - Determine error type
 
 		if (error.name === 'MongoError' && error.code === 11000) {
@@ -103,4 +120,4 @@ UserSchema.post(
 	}
 )
 
-export default mongoose.model<UserModel>(userRef, UserSchema)
+export default mongoose.model<IUserModel>(userRef, UserSchema)

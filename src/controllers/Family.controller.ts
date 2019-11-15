@@ -71,7 +71,7 @@ class FamilyController {
 	}
 
 	public deleteFamily = async (req: DeleteFamilyInput, res: Response) => {
-		const family = await FamilyModel.findByIdAndDelete(req.params.familyId)
+		const family = await FamilyModel.findByIdAndRemove(req.params.familyId)
 
 		if (!family) res.status(404).send()
 

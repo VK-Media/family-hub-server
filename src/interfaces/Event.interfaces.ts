@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import { Document, Types } from 'mongoose'
-import { UserModel } from './User.interfaces'
+import { IUserModel } from './User.interfaces'
 
 export enum WeekDays { // TODO: Find a more optimal way to do this
 	Monday = 'Monday',
@@ -34,10 +34,11 @@ export interface EventModel extends Document {
 	_id: Types.ObjectId
 	title: string
 	description: string
-	location?: string // TODO - Own model perhaps
+	location?: string // TODO: Own model perhaps
 	timeDetails: TimeDetails
 	alert?: Date
 	participants: Types.ObjectId[]
+	// TODO: Family event instead of user event?
 }
 
 export interface CreateEventInput extends Request {

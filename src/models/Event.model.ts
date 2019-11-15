@@ -62,4 +62,10 @@ const EventSchema = new mongoose.Schema(
 	}
 )
 
+EventSchema.methods.toJSON = function() {
+	const eventObject: EventModel = this.toObject()
+	delete eventObject.__v
+	return eventObject
+}
+
 export default mongoose.model<EventModel>(eventRef, EventSchema)

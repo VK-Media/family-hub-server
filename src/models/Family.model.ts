@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-import { FamilyModel } from '../interfaces/Family.interfaces'
+import { IFamilyModel } from '../interfaces/Family.interfaces'
 import { familyRef, userRef } from '../util/Schemas.util'
 
 const FamilySchema = new mongoose.Schema(
@@ -18,6 +18,12 @@ const FamilySchema = new mongoose.Schema(
 	}
 )
 
+FamilySchema.methods.toJSON = function() {
+	const familyObject: IFamilyModel = this.toObject()
+	delete familyObject.__v
+	return familyObject
+}
+
 FamilySchema.path('members').validate((members: [mongoose.Types.ObjectId]) => {
 	// TODO: Optimize
 	const memberToAdd = members[members.length - 1] // The last index in the array is the member to be tested
@@ -32,7 +38,7 @@ FamilySchema.path('members').validate((members: [mongoose.Types.ObjectId]) => {
 // Member uniqueness for proper error message when member already has a family
 FamilySchema.post(
 	'save',
-	(error: any, doc: FamilyModel, next: mongoose.HookNextFunction) => {
+	(error: any, doc: IFamilyModel, next: mongoose.HookNextFunction) => {
 		// TODO: - Determine error type
 
 		if (error.name === 'MongoError' && error.code === 11000) {
@@ -43,4 +49,4 @@ FamilySchema.post(
 	}
 )
 
-export default mongoose.model<FamilyModel>(familyRef, FamilySchema, 'families')
+export default mongoose.model<IFamilyModel>(familyRef, FamilySchema, 'families')

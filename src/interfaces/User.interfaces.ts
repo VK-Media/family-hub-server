@@ -7,7 +7,7 @@ export enum Mode {
 	ChildAccess = 'ChildAccess'
 }
 
-export interface UserModel extends Document {
+export interface IUserModel extends Document {
 	_id: Types.ObjectId
 	name: string
 	email: string
@@ -16,6 +16,7 @@ export interface UserModel extends Document {
 	profilePicturePath: string
 	profileColor: string
 	family: Types.ObjectId
+	events: Types.ObjectId[]
 	generateJWT: () => string
 }
 
@@ -25,20 +26,26 @@ export interface CreateUserInput extends Request {
 		email: string
 		password: string
 		profileColor?: string
-		familyId?: string
+		family?: string
 		// TODO: Decide whether or not appMode should be settable here
 	}
 	// TODO: Profile picture form input, make to a url and then add to UserModel
 }
 
-// tslint:disable-next-line: no-empty-interface // FIXME:
 export interface GetAllUsersInput extends Request {
-	// TODO:
+	query: {
+		includeFamily: boolean
+		includeEvents: boolean
+	}
 }
 
 export interface GetUserByIdInput extends Request {
 	params: {
 		userId: string
+	}
+	query: {
+		includeFamily: boolean
+		includeEvents: boolean
 	}
 }
 
@@ -64,6 +71,12 @@ export interface DeleteUserInput extends Request {
 }
 
 export interface GetUserFamilyInput extends Request {
+	params: {
+		userId: string
+	}
+}
+
+export interface GetUserEventsInput extends Request {
 	params: {
 		userId: string
 	}

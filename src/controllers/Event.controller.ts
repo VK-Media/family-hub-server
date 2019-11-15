@@ -8,14 +8,15 @@ import {
 	GetEventInput,
 	UpdateEventInput
 } from '../interfaces/Event.interfaces'
+import { IUserModel } from '../interfaces/User.interfaces'
 import { EventModel } from '../models/index'
-import { usersExist } from '../util/Models.util'
+import { addEventToParticipant, usersExist } from '../util/Models.util'
 
 class EventController {
 	public createEvent = async (req: CreateEventInput, res: Response) => {
-		const participantsExist = await usersExist(req.body.participants)
+		const participants = await usersExist(req.body.participants)
 
-		if (!participantsExist) {
+		if (!participants) {
 			return res
 				.status(400)
 				.send('Some or more participants does not exist')
@@ -26,10 +27,14 @@ class EventController {
 		event
 			.save()
 			.then(() => {
+				participants.forEach(partcipant => {
+					addEventToParticipant(partcipant, event._id)
+				})
 				res.status(201).send(event)
 			})
 			.catch((err: Error) => {
-				res.status(400).send(err.message)
+				console.error(err.message)
+				res.status(500).send()
 			})
 	}
 
@@ -53,13 +58,19 @@ class EventController {
 		if (!event) return res.status(404).send()
 
 		if (req.body.title) event.title = req.body.title
+
 		if (req.body.description) event.description = req.body.description
+
 		if (req.body.location) event.location = req.body.location
+
 		if (req.body.timeDetails) event.timeDetails = req.body.timeDetails // TODO: Decide whether or not it should override eventDetails or not
+
 		if (req.body.alert) event.alert = req.body.alert
+
+		let participants: false | IUserModel[]
 		if (req.body.participants) {
-			const participantsExist = await usersExist(req.body.participants)
-			if (participantsExist) {
+			participants = await usersExist(req.body.participants)
+			if (participants) {
 				const participantIds: Types.ObjectId[] = req.body.participants.map(
 					(participantId: string) => Types.ObjectId(participantId)
 				)
@@ -71,15 +82,22 @@ class EventController {
 		event
 			.save()
 			.then(() => {
+				if (participants) {
+					participants.forEach(partcipant => {
+						addEventToParticipant(partcipant, event._id)
+					})
+				}
+
 				res.send(event)
 			})
 			.catch((err: Error) => {
-				res.status(400).send(err.message)
+				console.error(err.message)
+				res.status(500).send()
 			})
 	}
 
 	public deleteEvent = async (req: DeleteEventInput, res: Response) => {
-		const event = await EventModel.findByIdAndDelete(req.params.eventId)
+		const event = await EventModel.findByIdAndRemove(req.params.eventId)
 
 		if (!event) return res.status(404).send()
 

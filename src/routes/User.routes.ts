@@ -4,7 +4,9 @@ import { UserController } from '../controllers/Index'
 import {
 	createUserRules,
 	deleteUserRules,
+	getAllUsersRules,
 	getUserByIdRules,
+	getUserEventsRules,
 	getUserFamilyRules,
 	updateUserRules
 } from '../validation/User.validation'
@@ -16,7 +18,7 @@ class UserRoutes {
 	public routes(app: Application): void {
 		app.route('/user')
 			.post(createUserRules(), validate, this.userController.createUser)
-			.get(this.userController.getAllUsers)
+			.get(getAllUsersRules(), validate, this.userController.getAllUsers)
 
 		app.route('/user/:userId')
 			.get(getUserByIdRules(), validate, this.userController.getUserById)
@@ -30,7 +32,12 @@ class UserRoutes {
 			this.userController.getUserFamily
 		)
 
-		app.get('/yser/:userId/events')
+		app.get(
+			'/user/:userId/events',
+			getUserEventsRules(),
+			validate,
+			this.userController.getUserEvents
+		)
 	}
 }
 
