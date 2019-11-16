@@ -9,20 +9,26 @@ import {
 	UpdateFamilyInput
 } from '../interfaces/Family.interfaces'
 import { FamilyModel } from '../models/index'
-import { userExist } from '../util/Models.util'
+import {
+	addFamilyToUser,
+	addMemberToFamily,
+	usersExist
+} from '../util/Models.util'
 
 class FamilyController {
-	public createFamily = (req: CreateFamilyInput, res: Response) => {
-		req.body.members.forEach(memberId => {
-			if (!userExist(memberId))
-				return res.status(400).send('Members does not exist')
-		})
+	public createFamily = async (req: CreateFamilyInput, res: Response) => {
+		const members = await usersExist(req.body.members)
+
+		if (!members) {
+			return res.status(400).send('Some or more members does not exist')
+		}
 
 		const family = new FamilyModel(req.body)
 
 		family
 			.save()
 			.then(() => {
+				members.forEach(member => addFamilyToUser(member, family._id))
 				res.status(201).send(family)
 			})
 			.catch((err: Error) => {
@@ -50,12 +56,6 @@ class FamilyController {
 
 		try {
 			if (req.body.newFamilyName) family.name = req.body.newFamilyName
-			if (req.body.newFamilyMemberId) {
-				if (!userExist(req.body.newFamilyMemberId)) {
-					return res.status(400).send('Member does not exist')
-				}
-				family.members.push(Types.ObjectId(req.body.newFamilyMemberId))
-			}
 		} catch (error) {
 			res.status(400).send(error.message)
 		}
@@ -71,9 +71,11 @@ class FamilyController {
 	}
 
 	public deleteFamily = async (req: DeleteFamilyInput, res: Response) => {
-		const family = await FamilyModel.findByIdAndRemove(req.params.familyId)
+		const family = await FamilyModel.findById(req.params.familyId)
 
 		if (!family) res.status(404).send()
+
+		await family.remove()
 
 		res.send(family)
 	}

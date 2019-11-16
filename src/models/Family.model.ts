@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 
 import { IFamilyModel } from '../interfaces/Family.interfaces'
 import { familyRef, userRef } from '../util/Schemas.util'
+import UserModel from './User.model'
 
 const FamilySchema = new mongoose.Schema(
 	{
@@ -34,6 +35,25 @@ FamilySchema.path('members').validate((members: [mongoose.Types.ObjectId]) => {
 
 	return !member
 }, 'Member is already in family')
+
+FamilySchema.pre('remove', async function(this: IFamilyModel, next) {
+	const familyToRemove = this
+
+	UserModel.find({
+		_id: {
+			$in: familyToRemove.members
+		}
+	}).then(members => {
+		for (const member of members) {
+			member.family = undefined
+			member.save().catch((err: Error) => {
+				throw err
+			})
+		}
+	})
+
+	next()
+})
 
 // Member uniqueness for proper error message when member already has a family
 FamilySchema.post(

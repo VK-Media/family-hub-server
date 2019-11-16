@@ -33,7 +33,7 @@ class EventController {
 				res.status(201).send(event)
 			})
 			.catch((err: Error) => {
-				console.error(err.message)
+				console.error('Create Event Error: ', err.message)
 				res.status(500).send()
 			})
 	}
@@ -91,17 +91,19 @@ class EventController {
 				res.send(event)
 			})
 			.catch((err: Error) => {
-				console.error(err.message)
+				console.error('Update Event Error: ', err.message)
 				res.status(500).send()
 			})
 	}
 
 	public deleteEvent = async (req: DeleteEventInput, res: Response) => {
-		const event = await EventModel.findByIdAndRemove(req.params.eventId)
+		const event = await EventModel.findById(req.params.eventId)
 
 		if (!event) return res.status(404).send()
 
-		res.status(404).send()
+		await event.remove()
+
+		res.send()
 	}
 }
 

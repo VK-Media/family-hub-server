@@ -4,7 +4,7 @@ import { Document, Types } from 'mongoose'
 export interface IFamilyModel extends Document {
 	_id: Types.ObjectId
 	name: string
-	members: [Types.ObjectId]
+	members: Types.ObjectId[]
 }
 
 export interface CreateFamilyInput extends Request {

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 import {
-	EventModel,
+	IEventModel,
 	PeriodOption,
 	WeekDays
 } from '../interfaces/Event.interfaces'
@@ -11,6 +11,7 @@ import {
 	eventTitleMaxLength,
 	userRef
 } from '../util/Schemas.util'
+import UserModel from './User.model'
 
 const EventSchema = new mongoose.Schema(
 	{
@@ -62,10 +63,31 @@ const EventSchema = new mongoose.Schema(
 	}
 )
 
+EventSchema.pre('remove', async function(this: IEventModel, next) {
+	const eventToRemove = this
+
+	UserModel.find({
+		_id: {
+			$in: eventToRemove.participants
+		}
+	}).then(participants => {
+		for (const participant of participants) {
+			participant.events = participant.events.filter(
+				eventId => !eventId.equals(eventToRemove._id)
+			)
+			participant.save().catch((err: Error) => {
+				throw err
+			})
+		}
+	})
+
+	next()
+})
+
 EventSchema.methods.toJSON = function() {
-	const eventObject: EventModel = this.toObject()
+	const eventObject: IEventModel = this.toObject()
 	delete eventObject.__v
 	return eventObject
 }
 
-export default mongoose.model<EventModel>(eventRef, EventSchema)
+export default mongoose.model<IEventModel>(eventRef, EventSchema)

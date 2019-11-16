@@ -1,7 +1,7 @@
 import { Types } from 'mongoose'
+import { IFamilyModel } from '../interfaces/Family.interfaces'
 import { IUserModel } from '../interfaces/User.interfaces'
 import { FamilyModel, UserModel } from '../models/index'
-import { IFamilyModel } from 'src/interfaces/Family.interfaces'
 
 export const userExist = async (userId: string) => {
 	const user = await UserModel.findById(userId)
@@ -19,16 +19,14 @@ export const usersExist = async (userIds: string[]) => {
 	let allUsersExist: boolean = true
 	const users: IUserModel[] = []
 
-	await new Promise((resolve, reject) => {
-		userIds.forEach(async userId => {
-			const user = await userExist(userId)
-			if (!user) {
-				allUsersExist = false
-				resolve()
-			} else users.push(user)
-		})
-		resolve()
-	})
+	for (const userId of userIds) {
+		const user = await userExist(userId)
+
+		if (!user) {
+			allUsersExist = false
+			return
+		} else users.push(user)
+	}
 
 	if (allUsersExist) return users
 	else return false
@@ -56,4 +54,11 @@ export const addMemberToFamily = (
 			throw err
 		})
 	}
+}
+
+export const addFamilyToUser = (user: IUserModel, familyId: Types.ObjectId) => {
+	user.family = familyId
+	user.save().catch((err: Error) => {
+		throw err
+	})
 }

@@ -43,17 +43,24 @@ export const createEventRules = () => {
 			.withMessage(
 				"An event can't exist without atleast one participant. Provide array of participants"
 			)
-			.custom(async (participants: [string]) => {
-				let allParticipantValidMongoId = true
-				participants.forEach(participant => {
+			.custom((participants: string[]) => {
+				for (const participant of participants) {
 					if (!isMongoId(participant)) {
-						allParticipantValidMongoId = false
-						return
+						return Promise.reject('Participant ID(s) invalid')
 					}
-				})
-
-				if (allParticipantValidMongoId) return true
-				else return Promise.reject('Participant ID(s) invalid')
+				}
+				return true
+			})
+			.custom((partcipants: string[]) => {
+				// Check for duplicates participant IDs
+				for (let i: number = 0; i < partcipants.length; i++) {
+					if (partcipants.indexOf(partcipants[i], i + 1) !== -1) {
+						return Promise.reject(
+							'Duplicate participants not allowed'
+						)
+					}
+				}
+				return true
 			})
 	]
 }

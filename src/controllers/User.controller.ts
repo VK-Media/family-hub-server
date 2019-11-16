@@ -98,9 +98,11 @@ class UserController {
 	}
 
 	public deleteUser = async (req: DeleteUserInput, res: Response) => {
-		const user = await UserModel.findByIdAndRemove(req.params.userId)
+		const user = await UserModel.findById(req.params.userId)
 
 		if (!user) return res.status(404).send()
+
+		await user.remove()
 
 		res.send(user)
 	}

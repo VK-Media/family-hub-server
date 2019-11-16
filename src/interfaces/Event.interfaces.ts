@@ -30,7 +30,7 @@ export interface TimeDetails {
 	}
 }
 
-export interface EventModel extends Document {
+export interface IEventModel extends Document {
 	_id: Types.ObjectId
 	title: string
 	description: string

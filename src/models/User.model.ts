@@ -1,10 +1,11 @@
 import { hashSync } from 'bcrypt'
 import { sign } from 'jsonwebtoken'
-import mongoose from 'mongoose'
+import mongoose, { Types } from 'mongoose'
 import { isEmail, isHexColor } from 'validator'
 
 import { IUserModel, Mode } from '../interfaces/User.interfaces'
 import { eventRef, familyRef, userRef } from '../util/Schemas.util'
+import EventModel from './Event.model'
 import FamilyModel from './Family.model'
 
 const UserSchema = new mongoose.Schema(
@@ -80,29 +81,54 @@ UserSchema.methods.generateJWT = async function() {
 
 // Hash password before saving
 UserSchema.pre('save', function(this: IUserModel, next) {
-	const user: IUserModel = this
-	const saltCycles = 8
+	const user = this
 	if (user.isModified('password')) {
+		const bcryptCycles = 8
 		if (user.password.length < 8)
 			throw Error('Password must be atleast 8 characters')
-		user.password = hashSync(user.password, saltCycles)
+		user.password = hashSync(user.password, bcryptCycles)
 	}
 
 	next()
 })
 
-UserSchema.pre('findOneAndRemove', async function(this: IUserModel, next) {
-	// TODO: Remove family and events when user is removed, and also when events or family is deleted remove them from users
-	const userToRemove: IUserModel = this
-	console.log(userToRemove.family)
+UserSchema.pre('remove', async function(this: IUserModel, next) {
+	const userToRemove = this
 
 	const family = await FamilyModel.findById(userToRemove.family)
-	console.log(family)
 
 	if (family) {
-		family.members.filter(memerId => memerId !== userToRemove._id)
-		console.log(family.members)
+		const familyMembersWithoutUser: Types.ObjectId[] = family.members.filter(
+			memerId => !memerId.equals(userToRemove._id)
+		)
+
+		family.members = familyMembersWithoutUser
+
+		family.save().catch((err: Error) => {
+			throw err
+		})
 	}
+
+	const events = await EventModel.find({
+		participants: userToRemove._id
+	})
+
+	if (events) {
+		events.forEach(async event => {
+			// Event was only related to user to be removed, therefore should be removed completly
+			if (event.participants.length === 1) {
+				event.remove()
+			} else {
+				event.participants = event.participants.filter(
+					participantId => !participantId.equals(userToRemove._id)
+				)
+			}
+			event.save().catch((err: Error) => {
+				throw err
+			})
+		})
+	}
+
 	next()
 })
 
