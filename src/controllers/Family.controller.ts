@@ -77,7 +77,7 @@ class FamilyController {
 
 		await family.remove()
 
-		res.send(family)
+		res.send(family._id)
 	}
 }
 

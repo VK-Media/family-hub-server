@@ -1,6 +1,8 @@
 import { Application } from 'express'
 
 import { EventController } from '../controllers/Index'
+import socketServer from '../SocketServer'
+import { demoConstants } from '../util/SocketConstants.util'
 import {
 	createEventRules,
 	deleteEventByIdRules,
@@ -10,31 +12,47 @@ import {
 } from '../validation/Event.validation'
 import validate from '../validation/Validator'
 
-class UserRoutes {
-	private userController: EventController = new EventController()
+class EventRoutes {
+	private eventController: EventController = new EventController()
 
 	public routes(app: Application): void {
 		app.route('/event')
-			.get(getEventsRules(), validate, this.userController.getEvents)
-			.post(createEventRules(), validate, this.userController.createEvent)
+			.get(getEventsRules(), validate, this.eventController.getEvents)
+			.post(
+				createEventRules(),
+				validate,
+				this.eventController.createEvent
+			)
 
 		app.route('/event/:eventId')
 			.get(
 				getEventByIdRules(),
 				validate,
-				this.userController.getEventById
+				this.eventController.getEventById
 			)
 			.patch(
 				updateEventRules(),
 				validate,
-				this.userController.updateEvent
+				this.eventController.updateEvent
 			)
 			.delete(
 				deleteEventByIdRules(),
 				validate,
-				this.userController.deleteEvent
+				this.eventController.deleteEvent
 			)
+	}
+
+	public realtimeRoutes(): void {
+		socketServer.server.on('connection', socket => {
+			console.log('Client connected')
+
+			socket.emit(demoConstants.NEWS, 'BREAKING NEWS')
+
+			socket.on(demoConstants.OTHER_EVENT, data => {
+				console.log(data)
+			})
+		})
 	}
 }
 
-export default UserRoutes
+export default EventRoutes

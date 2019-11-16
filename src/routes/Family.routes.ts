@@ -9,7 +9,7 @@ import {
 } from '../validation/family.validation'
 import validate from '../validation/Validator'
 
-class UserRoutes {
+class FamilyRoutes {
 	private familyController: FamilyController = new FamilyController()
 
 	public routes(app: Application): void {
@@ -40,4 +40,4 @@ class UserRoutes {
 	}
 }
 
-export default UserRoutes
+export default FamilyRoutes

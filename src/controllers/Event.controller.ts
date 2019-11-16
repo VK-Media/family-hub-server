@@ -10,7 +10,9 @@ import {
 } from '../interfaces/Event.interfaces'
 import { IUserModel } from '../interfaces/User.interfaces'
 import { EventModel } from '../models/index'
+import socketServer from '../SocketServer'
 import { addEventToParticipant, usersExist } from '../util/Models.util'
+import { eventConstants } from '../util/SocketConstants.util'
 
 class EventController {
 	public createEvent = async (req: CreateEventInput, res: Response) => {
@@ -30,6 +32,7 @@ class EventController {
 				participants.forEach(partcipant => {
 					addEventToParticipant(partcipant, event._id)
 				})
+				socketServer.server.emit(eventConstants.EVENT_CREATED, event)
 				res.status(201).send(event)
 			})
 			.catch((err: Error) => {
@@ -87,7 +90,7 @@ class EventController {
 						addEventToParticipant(partcipant, event._id)
 					})
 				}
-
+				socketServer.server.emit(eventConstants.EVENT_UPDATED, event)
 				res.send(event)
 			})
 			.catch((err: Error) => {
@@ -103,7 +106,9 @@ class EventController {
 
 		await event.remove()
 
-		res.send()
+		socketServer.server.emit(eventConstants.EVENT_DELETED, event._id)
+
+		res.send(event._id)
 	}
 }
 

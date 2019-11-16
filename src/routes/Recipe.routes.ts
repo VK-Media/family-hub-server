@@ -2,17 +2,17 @@ import { Application } from 'express'
 import { RecipeController } from '../controllers/Index'
 
 class RecipeRoutes {
-	private userController: RecipeController = new RecipeController()
+	private recipeController: RecipeController = new RecipeController()
 
 	public routes(app: Application): void {
 		app.route('/recipe')
-			.get(this.userController.getRecipes)
-			.post(this.userController.createRecipe)
+			.get(this.recipeController.getRecipes)
+			.post(this.recipeController.createRecipe)
 
 		app.route('/recipe/:recipeId')
-			.get(this.userController.getRecipeById)
-			.patch(this.userController.updateRecipe)
-			.delete(this.userController.deleteRecipe)
+			.get(this.recipeController.getRecipeById)
+			.patch(this.recipeController.updateRecipe)
+			.delete(this.recipeController.deleteRecipe)
 	}
 }
 

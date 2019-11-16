@@ -1,5 +1,7 @@
 import bodyParser from 'body-parser'
+import cors from 'cors'
 import express from 'express'
+
 import { connect } from 'mongoose'
 
 import {
@@ -8,6 +10,7 @@ import {
 	RecipeRoutes,
 	UserRoutes
 } from './routes/Index'
+import socketServer from './SocketServer'
 
 class App {
 	public app: express.Application
@@ -19,6 +22,7 @@ class App {
 
 	constructor() {
 		this.app = express()
+		socketServer.createServer(this.app)
 		this.config()
 		this.mongoSetup()
 
@@ -26,20 +30,28 @@ class App {
 		this.familyRoutes.routes(this.app)
 		this.eventRoutes.routes(this.app)
 		this.recipeRoutes.routes(this.app)
+
+		this.eventRoutes.realtimeRoutes()
 	}
 
 	private config(): void {
 		this.app.use(bodyParser.json())
 		this.app.use(bodyParser.urlencoded({ extended: false }))
-		this.app.use((req, res, next) => {
-			res.header('Access-Control-Allow-Origin', '*')
-			res.header(
-				'Access-Control-Allow-Headers',
-				'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-			)
-			res.header('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE')
-			next()
-		})
+		this.app.use(
+			cors({
+				origin: 'http://localhost:3000',
+				credentials: true
+			})
+		)
+		// this.app.use((req, res, next) => {
+		// 	res.header('Access-Control-Allow-Origin', '*')
+		// 	res.header(
+		// 		'Access-Control-Allow-Headers',
+		// 		'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+		// 	)
+		// 	res.header('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE')
+		// 	next()
+		// })
 	}
 
 	private mongoSetup(): void {

@@ -104,7 +104,7 @@ class UserController {
 
 		await user.remove()
 
-		res.send(user)
+		res.send(user._id)
 	}
 
 	public getUserFamily = async (req: GetUserFamilyInput, res: Response) => {
