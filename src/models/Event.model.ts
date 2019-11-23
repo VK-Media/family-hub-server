@@ -31,37 +31,58 @@ const EventSchema = new mongoose.Schema(
 			trim: true
 		},
 		timeDetails: {
-			type: {
-				startTime: { type: Date, required: true },
-				endTime: { type: Date },
-				repeat: {
-					onWeekdays: [
-						{
-							type: String,
-							enum: Object.keys(WeekDays),
-							required: true
-						}
-					],
-					frequency: {
+			startTime: { type: Date, required: true },
+			endTime: { type: Date, required: true },
+			allDay: { type: Boolean, default: false },
+			repeat: {
+				frequency: {
+					type: String,
+					enum: Object.keys(PeriodOption),
+					required: true
+				},
+				onWeekdays: [
+					{
 						type: String,
-						enum: Object.keys(PeriodOption),
-						required: true
-					},
-					everyFrequency: { type: Number, required: true },
-					endRepeat: { type: Date }
-				}
-			},
-			required: true
+						enum: Object.keys(WeekDays),
+						required: false
+					}
+				],
+				endRepeat: { type: Date },
+				exceptions: [
+					{
+						startTime: { type: Date, required: true },
+						endTime: { type: Date, required: true },
+						removed: { type: Boolean, required: false }
+					}
+				]
+			}
 		},
 		alert: {
 			type: Date
 		},
-		participants: [{ type: mongoose.Schema.Types.ObjectId, ref: userRef }]
+		participants: [{ type: mongoose.Schema.Types.ObjectId, ref: userRef }],
+		deleted: {
+			type: Boolean,
+			default: false
+		}
 	},
 	{
 		timestamps: true
 	}
 )
+
+EventSchema.pre('validate', function(this: IEventModel, next) {
+	const event = this
+	// OnWeekdays should not be set unless it is a weekly event
+	if (event.timeDetails.repeat.frequency !== PeriodOption.Weekly)
+		event.timeDetails.repeat.onWeekdays = undefined
+
+	// exceptions should only be set if it's an update
+	if (event.isNew) {
+		event.timeDetails.repeat.exceptions = undefined
+	}
+	next()
+})
 
 EventSchema.pre('remove', async function(this: IEventModel, next) {
 	const eventToRemove = this
@@ -87,6 +108,7 @@ EventSchema.pre('remove', async function(this: IEventModel, next) {
 EventSchema.methods.toJSON = function() {
 	const eventObject: IEventModel = this.toObject()
 	delete eventObject.__v
+	delete eventObject.deleted
 	return eventObject
 }
 

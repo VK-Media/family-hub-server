@@ -1,6 +1,5 @@
 import { Request } from 'express'
 import { Document, Types } from 'mongoose'
-import { IUserModel } from './User.interfaces'
 
 export enum WeekDays { // TODO: Find a more optimal way to do this
 	Monday = 'Monday',
@@ -19,34 +18,56 @@ export enum PeriodOption {
 	Yearly = 'Yearly'
 }
 
+export interface IEventException {
+	startTime: Date
+	endTime: Date
+	removed?: boolean
+}
+
 export interface TimeDetails {
 	startTime: Date
-	endTime?: Date // null for all-day option
+	endTime: Date
+	allDay?: boolean
 	repeat?: {
-		onWeekdays: WeekDays[]
+		// TODO: Make this very customizable in future
 		frequency: PeriodOption
-		everyFrequency: number
+		onWeekdays?: WeekDays[] // NOTE: If frequency is weekly, days should be chooseable
 		endRepeat?: Date
+		exceptions?: IEventException[]
 	}
 }
 
 export interface IEventModel extends Document {
 	_id: Types.ObjectId
 	title: string
-	description: string
-	location?: string // TODO: Own model perhaps
+	description?: string
+	location?: string // TODO: Google API for location
 	timeDetails: TimeDetails
 	alert?: Date
 	participants: Types.ObjectId[]
-	// TODO: Family event instead of user event?
+	deleted: boolean
+
+	// TODO: Deleted ALL objects, automatic deletion from database later, like facebook
+}
+
+export interface CreateTimeDetails {
+	startTime?: Date
+	endTime?: Date
+	allDay?: boolean
+	repeat?: {
+		frequency: PeriodOption
+		onWeekdays?: WeekDays[]
+		endRepeat?: Date
+		exceptions?: IEventException[]
+	}
 }
 
 export interface CreateEventInput extends Request {
 	body: {
 		title: string
-		description: string
+		description?: string
 		location?: string
-		timeDetails: TimeDetails
+		timeDetails: CreateTimeDetails
 		alert?: Date
 		participants: string[]
 	}
@@ -63,6 +84,24 @@ export interface GetEventByIdInput extends Request {
 	}
 }
 
+export interface IEventExceptionUpdate {
+	startTime?: Date
+	endTime?: Date
+	removed?: boolean
+}
+
+export interface TimeDetailsUpdate {
+	startTime?: Date
+	endTime?: Date
+	allDay?: Date
+	repeat?: {
+		frequency?: PeriodOption
+		onWeekdays?: WeekDays[] // NOTE: conditional based on frequency
+		endRepeat?: Date
+		exceptions?: IEventExceptionUpdate[]
+	}
+}
+
 export interface UpdateEventInput extends Request {
 	params: {
 		eventId: string
@@ -71,7 +110,7 @@ export interface UpdateEventInput extends Request {
 		title?: string
 		description?: string
 		location?: string
-		timeDetails?: TimeDetails
+		timeDetails?: TimeDetailsUpdate
 		alert?: Date
 		participants?: string[]
 	}

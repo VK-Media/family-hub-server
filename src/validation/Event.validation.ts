@@ -1,11 +1,15 @@
 import { check } from 'express-validator'
 import { isMongoId } from 'validator'
 
+import { isObject } from '../util/Objects.util'
 import {
 	eventDescriptionMaxLength,
 	eventTitleMaxLength
 } from '../util/Schemas.util'
-import { validateEventTimeDetails } from '../util/Validation.util'
+import {
+	validateEventTimeDetails,
+	validateEventTimeDetailsUpdate
+} from '../util/Validation.util'
 
 export const createEventRules = () => {
 	return [
@@ -16,9 +20,7 @@ export const createEventRules = () => {
 			.isLength({ max: eventTitleMaxLength })
 			.withMessage('Max length of ' + eventTitleMaxLength),
 		check('description')
-			.exists()
-			.withMessage('Required')
-			.bail()
+			.optional()
 			.isLength({ max: eventDescriptionMaxLength })
 			.withMessage('Max length of ' + eventDescriptionMaxLength),
 		check('location')
@@ -29,7 +31,11 @@ export const createEventRules = () => {
 			.withMessage('Required')
 			.bail()
 			.custom(timeDetails => {
-				return validateEventTimeDetails(timeDetails)
+				if (!isObject(timeDetails))
+					return Promise.reject('Not a valid object')
+				const errors = validateEventTimeDetails(timeDetails)
+				if (errors) return Promise.reject(errors)
+				else return true
 			}),
 		check('alert')
 			.optional()
@@ -91,7 +97,11 @@ export const updateEventRules = () => {
 		check('timeDetails')
 			.optional()
 			.custom(timeDetails => {
-				return validateEventTimeDetails(timeDetails)
+				if (!isObject(timeDetails))
+					return Promise.reject('Not a valid object')
+				const errors = validateEventTimeDetailsUpdate(timeDetails)
+				if (errors) return Promise.reject(errors)
+				else return true
 			}),
 		check('alert')
 			.optional()

@@ -6,6 +6,7 @@ import {
 	DeleteEventInput,
 	GetEventByIdInput,
 	GetEventInput,
+	IEventException,
 	UpdateEventInput
 } from '../interfaces/Event.interfaces'
 import { IUserModel } from '../interfaces/User.interfaces'
@@ -14,6 +15,7 @@ import socketServer from '../SocketServer'
 import { addEventToParticipant, usersExist } from '../util/Models.util'
 import { eventConstants } from '../util/SocketConstants.util'
 
+// TODO: JWT + authentication, Event fixing, https + raspberry pi + nginx + letsencrypt
 class EventController {
 	public createEvent = async (req: CreateEventInput, res: Response) => {
 		const participants = await usersExist(req.body.participants)
@@ -32,12 +34,15 @@ class EventController {
 				participants.forEach(partcipant => {
 					addEventToParticipant(partcipant, event._id)
 				})
-				socketServer.server.emit(eventConstants.EVENT_CREATED, event)
+				socketServer.server.emit(
+					eventConstants.EVENT_CREATED + '[]',
+					event
+				)
 				res.status(201).send(event)
 			})
 			.catch((err: Error) => {
 				console.error('Create Event Error: ', err.message)
-				res.status(500).send()
+				res.status(500).send(err.message)
 			})
 	}
 
@@ -66,7 +71,61 @@ class EventController {
 
 		if (req.body.location) event.location = req.body.location
 
-		if (req.body.timeDetails) event.timeDetails = req.body.timeDetails // TODO: Decide whether or not it should override eventDetails or not
+		if (req.body.timeDetails) {
+			const timeDetails = req.body.timeDetails
+
+			if (timeDetails.startTime)
+				event.timeDetails.startTime = timeDetails.startTime
+
+			if (timeDetails.endTime)
+				event.timeDetails.endTime = timeDetails.endTime
+
+			// Validation ensures that if allDay is set to true, req.body.timeDetails startTime and endTime is set correctly
+			if (timeDetails.allDay) {
+				event.timeDetails.allDay = true
+				event.timeDetails.startTime = timeDetails.startTime
+				event.timeDetails.endTime = timeDetails.endTime
+			}
+
+			if (timeDetails.repeat) {
+				const repeat = req.body.timeDetails.repeat
+				if (repeat.endRepeat)
+					event.timeDetails.repeat.endRepeat = repeat.endRepeat
+
+				if (repeat.frequency)
+					event.timeDetails.repeat.frequency = repeat.frequency
+
+				if (repeat.onWeekdays)
+					event.timeDetails.repeat.onWeekdays = repeat.onWeekdays
+
+				if (repeat.exceptions) {
+					const exceptions = req.body.timeDetails.repeat.exceptions
+					for (const exception of exceptions) {
+						let startTime: Date
+						exception.startTime
+							? (startTime = exception.startTime)
+							: (startTime = event.timeDetails.startTime)
+
+						let endTime: Date
+						exception.endTime
+							? (endTime = exception.endTime)
+							: (endTime = event.timeDetails.endTime)
+
+						let removed: boolean
+						exception.removed ? (removed = true) : (removed = false)
+
+						const newEventException: IEventException = {
+							startTime,
+							endTime,
+							removed
+						}
+						event.timeDetails.repeat.exceptions.push(
+							newEventException
+						)
+					}
+				}
+			}
+		}
 
 		if (req.body.alert) event.alert = req.body.alert
 

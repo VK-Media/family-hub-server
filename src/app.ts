@@ -22,7 +22,7 @@ class App {
 
 	constructor() {
 		this.app = express()
-		socketServer.createServer(this.app)
+		this.createSocketIOServer()
 		this.config()
 		this.mongoSetup()
 
@@ -43,15 +43,6 @@ class App {
 				credentials: true
 			})
 		)
-		// this.app.use((req, res, next) => {
-		// 	res.header('Access-Control-Allow-Origin', '*')
-		// 	res.header(
-		// 		'Access-Control-Allow-Headers',
-		// 		'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-		// 	)
-		// 	res.header('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE')
-		// 	next()
-		// })
 	}
 
 	private mongoSetup(): void {
@@ -61,6 +52,10 @@ class App {
 			useCreateIndex: true,
 			useFindAndModify: false
 		})
+	}
+
+	private createSocketIOServer(): void {
+		socketServer.createServer(this.app)
 	}
 }
 
