@@ -1,5 +1,4 @@
 import { Response } from 'express'
-import { Types } from 'mongoose'
 
 import {
 	CreateFamilyInput,
@@ -9,11 +8,7 @@ import {
 	UpdateFamilyInput
 } from '../interfaces/Family.interfaces'
 import { FamilyModel } from '../models/index'
-import {
-	addFamilyToUser,
-	addMemberToFamily,
-	usersExist
-} from '../util/Models.util'
+import { addFamilyToUser, usersExist } from '../util/Models.util'
 
 class FamilyController {
 	public createFamily = async (req: CreateFamilyInput, res: Response) => {

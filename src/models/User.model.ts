@@ -1,9 +1,9 @@
-import { hashSync } from 'bcrypt'
 import { sign } from 'jsonwebtoken'
 import mongoose, { Types } from 'mongoose'
 import { isEmail, isHexColor } from 'validator'
 
 import { IUserModel, Mode } from '../interfaces/User.interfaces'
+import { hashPassword } from '../util/Models.util'
 import { eventRef, familyRef, userRef } from '../util/Schemas.util'
 import EventModel from './Event.model'
 import FamilyModel from './Family.model'
@@ -72,23 +72,25 @@ UserSchema.methods.toJSON = function() {
 	return userObject
 }
 
-UserSchema.methods.generateJWT = async function() {
+UserSchema.methods.generateJWT = function() {
 	const person: IUserModel = this
-	const token = sign({ _id: person._id.toString() }, process.env.JWT_SECRET)
+	const jwt = sign({ _id: person._id.toString() }, process.env.JWT_SECRET, {
+		expiresIn: '30 days',
+		notBefore: 2 // First valid after 2 seconds to avoid brute force attacks
+	})
 
-	return token
+	return jwt
 }
 
 // Hash password before saving
 UserSchema.pre('save', function(this: IUserModel, next) {
 	const user = this
 	if (user.isModified('password')) {
-		const bcryptCycles = 8
-		if (user.password.length < 8)
+		if (user.password.length < 8) {
 			throw Error('Password must be atleast 8 characters')
-		user.password = hashSync(user.password, bcryptCycles)
+		}
+		user.password = hashPassword(user.password)
 	}
-
 	next()
 })
 

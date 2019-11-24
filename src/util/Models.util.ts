@@ -1,4 +1,6 @@
+import { hashSync,  } from 'bcrypt'
 import { Types } from 'mongoose'
+
 import { IFamilyModel } from '../interfaces/Family.interfaces'
 import { IUserModel } from '../interfaces/User.interfaces'
 import { FamilyModel, UserModel } from '../models/index'
@@ -61,4 +63,10 @@ export const addFamilyToUser = (user: IUserModel, familyId: Types.ObjectId) => {
 	user.save().catch((err: Error) => {
 		throw err
 	})
+}
+
+export const hashPassword = (password: string) => {
+	const bcryptCycles = 8
+	const hashedPassword = hashSync(password, bcryptCycles)
+	return hashedPassword
 }

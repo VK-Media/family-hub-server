@@ -1,6 +1,7 @@
 import { Application } from 'express'
 
 import { UserController } from '../controllers/Index'
+import { jwtAuth } from '../validation/Auth.validation'
 import {
 	createUserRules,
 	deleteUserRules,
@@ -34,6 +35,7 @@ class UserRoutes {
 
 		app.get(
 			'/user/:userId/events',
+			jwtAuth,
 			getUserEventsRules(),
 			validate,
 			this.userController.getUserEvents

@@ -4,6 +4,7 @@ import express from 'express'
 
 import { connect } from 'mongoose'
 
+import AuthRoutes from './routes/Auth.routes'
 import {
 	EventRoutes,
 	FamilyRoutes,
@@ -19,6 +20,7 @@ class App {
 	public familyRoutes: FamilyRoutes = new FamilyRoutes()
 	public eventRoutes: EventRoutes = new EventRoutes()
 	public recipeRoutes: RecipeRoutes = new RecipeRoutes()
+	public authRoutes: AuthRoutes = new AuthRoutes()
 
 	constructor() {
 		this.app = express()
@@ -30,6 +32,7 @@ class App {
 		this.familyRoutes.routes(this.app)
 		this.eventRoutes.routes(this.app)
 		this.recipeRoutes.routes(this.app)
+		this.authRoutes.routes(this.app)
 
 		this.eventRoutes.realtimeRoutes()
 	}

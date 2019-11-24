@@ -29,7 +29,7 @@ class UserController {
 		user.save()
 			.then(() => {
 				if (family) addMemberToFamily(family, user._id)
-				res.status(201).send(user)
+				res.status(201).send({ user, jwt: user.generateJWT() })
 			})
 			.catch((err: Error) => {
 				res.status(400).send(err.message)
@@ -118,9 +118,7 @@ class UserController {
 	}
 
 	public getUserEvents = async (req: GetUserEventsInput, res: Response) => {
-		const userEvents = await EventModel.find({
-			participants: req.params.userId
-		})
+		const userEvents = await EventModel.find({ _id: req.user.events })
 
 		res.send(userEvents)
 	}

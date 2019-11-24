@@ -17,7 +17,11 @@ class EventRoutes {
 
 	public routes(app: Application): void {
 		app.route('/event')
-			.get(getEventsRules(), validate, this.eventController.getEvents)
+			.get(
+				getEventsRules(),
+				validate,
+				this.eventController.getEvents
+			)
 			.post(
 				createEventRules(),
 				validate,

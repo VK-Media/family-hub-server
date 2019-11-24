@@ -68,16 +68,16 @@ export interface DeleteUserInput extends Request {
 	params: {
 		userId: string
 	}
+	user: IUserModel
 }
 
 export interface GetUserFamilyInput extends Request {
 	params: {
 		userId: string
 	}
+	user: IUserModel
 }
 
 export interface GetUserEventsInput extends Request {
-	params: {
-		userId: string
-	}
+	user: IUserModel
 }
