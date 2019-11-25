@@ -40,13 +40,11 @@ export interface GetAllUsersInput extends Request {
 }
 
 export interface GetUserByIdInput extends Request {
-	params: {
-		userId: string
-	}
 	query: {
 		includeFamily: boolean
 		includeEvents: boolean
 	}
+	user: IUserModel
 }
 
 export interface UpdateUserInput extends Request {
@@ -58,23 +56,15 @@ export interface UpdateUserInput extends Request {
 		newFamilyId?: string
 		newAppMode?: Mode
 	}
-	params: {
-		userId: string
-	}
+	user: IUserModel
 	// TODO: Profile picture form input, make to a url and then add to UserModel
 }
 
 export interface DeleteUserInput extends Request {
-	params: {
-		userId: string
-	}
 	user: IUserModel
 }
 
 export interface GetUserFamilyInput extends Request {
-	params: {
-		userId: string
-	}
 	user: IUserModel
 }
 

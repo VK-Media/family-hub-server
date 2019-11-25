@@ -15,7 +15,7 @@ import socketServer from '../SocketServer'
 import { addEventToParticipant, usersExist } from '../util/Models.util'
 import { eventConstants } from '../util/SocketConstants.util'
 
-// unit tests + jwt routes DON'T PUT AUTHENTICATION ON EVENT THINGS
+// unit tests + jwt routes
 // git branches + stille og roligt login form måske, se på React Final Form eller hvad det lige hed
 class EventController {
 	public createEvent = async (req: CreateEventInput, res: Response) => {

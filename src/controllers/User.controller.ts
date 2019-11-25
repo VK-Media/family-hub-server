@@ -49,7 +49,7 @@ class UserController {
 	}
 
 	public getUserById = async (req: GetUserByIdInput, res: Response) => {
-		const user = UserModel.findById(req.params.userId)
+		const user = UserModel.findById(req.user._id)
 
 		if (req.query.includeFamily) user.populate('family')
 		if (req.query.includeEvents) user.populate('events')
@@ -62,7 +62,7 @@ class UserController {
 	}
 
 	public updateUser = async (req: UpdateUserInput, res: Response) => {
-		const user = await UserModel.findById(req.params.userId)
+		const user = await UserModel.findById(req.user._id)
 
 		if (!user) return res.status(404).send()
 
@@ -86,7 +86,7 @@ class UserController {
 			if (req.body.newAppMode) user.appMode = Mode[req.body.newAppMode]
 		} catch (error) {
 			console.error(error.message)
-			res.status(500).send()
+			res.status(500).send({ error: error.message })
 		}
 
 		user.save()
@@ -99,9 +99,9 @@ class UserController {
 	}
 
 	public deleteUser = async (req: DeleteUserInput, res: Response) => {
-		const user = await UserModel.findById(req.params.userId)
+		const user = await UserModel.findById(req.user._id)
 
-		if (!user) return res.status(404).send()
+		if (!user) return res.status(404).send({ error: 'User does not exist' })
 
 		await user.remove()
 
@@ -109,11 +109,12 @@ class UserController {
 	}
 
 	public getUserFamily = async (req: GetUserFamilyInput, res: Response) => {
-		const userFamily = await FamilyModel.findOne({
-			members: req.params.userId
-		})
+		const userFamily = await FamilyModel.findById(req.user.family)
 
-		if (!userFamily) return res.status(404).send()
+		if (!userFamily)
+			return res
+				.status(404)
+				.send({ error: 'User does not have a family' })
 
 		res.send({ family: userFamily })
 	}

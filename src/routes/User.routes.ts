@@ -4,11 +4,7 @@ import { UserController } from '../controllers/Index'
 import { jwtAuth } from '../validation/Auth.validation'
 import {
 	createUserRules,
-	deleteUserRules,
 	getAllUsersRules,
-	getUserByIdRules,
-	getUserEventsRules,
-	getUserFamilyRules,
 	updateUserRules
 } from '../validation/User.validation'
 import validate from '../validation/Validator'
@@ -19,27 +15,23 @@ class UserRoutes {
 	public routes(app: Application): void {
 		app.route('/user')
 			.post(createUserRules(), validate, this.userController.createUser)
-			.get(getAllUsersRules(), validate, this.userController.getAllUsers)
+			.get(jwtAuth, this.userController.getUserById)
+			.patch(
+				jwtAuth,
+				updateUserRules(),
+				validate,
+				this.userController.updateUser
+			)
+			.delete(jwtAuth, this.userController.deleteUser)
 
-		app.route('/user/:userId')
-			.get(getUserByIdRules(), validate, this.userController.getUserById)
-			.patch(updateUserRules(), validate, this.userController.updateUser)
-			.delete(deleteUserRules(), validate, this.userController.deleteUser)
-
-		app.get(
-			'/user/:userId/family',
-			getUserFamilyRules(),
+		app.route('/users').get(
+			getAllUsersRules(),
 			validate,
-			this.userController.getUserFamily
+			this.userController.getAllUsers
 		)
+		app.get('/user/family', jwtAuth, this.userController.getUserFamily)
 
-		app.get(
-			'/user/:userId/events',
-			jwtAuth,
-			getUserEventsRules(),
-			validate,
-			this.userController.getUserEvents
-		)
+		app.get('/user/events', jwtAuth, this.userController.getUserEvents)
 	}
 }
 
