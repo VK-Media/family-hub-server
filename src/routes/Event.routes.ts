@@ -3,6 +3,7 @@ import { Application } from 'express'
 import { EventController } from '../controllers/Index'
 import socketServer from '../SocketServer'
 import { demoConstants } from '../util/SocketConstants.util'
+import { jwtAuth } from '../validation/Auth.validation'
 import {
 	createEventRules,
 	deleteEventByIdRules,
@@ -18,11 +19,13 @@ class EventRoutes {
 	public routes(app: Application): void {
 		app.route('/event')
 			.get(
+				jwtAuth,
 				getEventsRules(),
 				validate,
 				this.eventController.getEvents
 			)
 			.post(
+				jwtAuth,
 				createEventRules(),
 				validate,
 				this.eventController.createEvent
@@ -30,16 +33,19 @@ class EventRoutes {
 
 		app.route('/event/:eventId')
 			.get(
+				jwtAuth,
 				getEventByIdRules(),
 				validate,
 				this.eventController.getEventById
 			)
 			.patch(
+				jwtAuth,
 				updateEventRules(),
 				validate,
 				this.eventController.updateEvent
 			)
 			.delete(
+				jwtAuth,
 				deleteEventByIdRules(),
 				validate,
 				this.eventController.deleteEvent

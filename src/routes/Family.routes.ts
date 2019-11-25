@@ -1,6 +1,7 @@
 import { Application } from 'express'
 
 import { FamilyController } from '../controllers/Index'
+import { jwtAuth } from '../validation/Auth.validation'
 import {
 	createFamilyRules,
 	deleteFamilyByIdRules,

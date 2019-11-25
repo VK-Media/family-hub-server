@@ -42,13 +42,8 @@ export const getAllUsersRules = () => {
 	]
 }
 
-export const getUserByIdRules = () => {
-	return [check('userId').isMongoId()]
-}
-
 export const updateUserRules = () => {
 	return [
-		check('userId').isMongoId(),
 		check('newName')
 			.optional()
 			.isLength({ min: 3 })
@@ -71,16 +66,4 @@ export const updateUserRules = () => {
 			.isIn(Object.keys(Mode))
 			.withMessage('Invalid value. Options include: ' + Object.keys(Mode))
 	]
-}
-
-export const deleteUserRules = () => {
-	return [check('userId').isMongoId()]
-}
-
-export const getUserFamilyRules = () => {
-	return [check('userId').isMongoId()]
-}
-
-export const getUserEventsRules = () => {
-	return [check('userId').isMongoId()]
 }
