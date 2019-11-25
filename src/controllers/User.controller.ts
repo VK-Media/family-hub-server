@@ -21,9 +21,10 @@ class UserController {
 		if (req.body.family) {
 			family = await familyExist(req.body.family)
 			if (!family) {
-				return res.status(400).send('Family does not exist')
+				return res.status(400).send({ error: 'Family does not exist' })
 			}
 		}
+
 		const user = new UserModel(req.body)
 
 		user.save()
@@ -32,7 +33,7 @@ class UserController {
 				res.status(201).send({ user, jwt: user.generateJWT() })
 			})
 			.catch((err: Error) => {
-				res.status(400).send(err.message)
+				res.status(400).send({ error: err.message })
 			})
 	}
 
@@ -43,7 +44,7 @@ class UserController {
 		if (req.query.includeEvents) users.populate('events')
 
 		users.exec().then(data => {
-			res.send(data)
+			res.send({ user: data })
 		})
 	}
 
@@ -56,7 +57,7 @@ class UserController {
 		user.exec().then(data => {
 			if (!data) return res.status(404).send()
 
-			res.send(data)
+			res.send({ user: data })
 		})
 	}
 
@@ -90,10 +91,10 @@ class UserController {
 
 		user.save()
 			.then(() => {
-				res.send(user)
+				res.send({ user })
 			})
 			.catch((err: Error) => {
-				res.status(400).send(err.message)
+				res.status(400).send({ error: err.message })
 			})
 	}
 
@@ -104,7 +105,7 @@ class UserController {
 
 		await user.remove()
 
-		res.send(user._id)
+		res.send({ user: { id: user._id } })
 	}
 
 	public getUserFamily = async (req: GetUserFamilyInput, res: Response) => {
@@ -114,13 +115,13 @@ class UserController {
 
 		if (!userFamily) return res.status(404).send()
 
-		res.send(userFamily)
+		res.send({ family: userFamily })
 	}
 
 	public getUserEvents = async (req: GetUserEventsInput, res: Response) => {
 		const userEvents = await EventModel.find({ _id: req.user.events })
 
-		res.send(userEvents)
+		res.send({ events: userEvents })
 	}
 }
 

@@ -14,7 +14,7 @@ class EventController {
 
 		if (correctPassword) {
 			res.send({ jwt: user.generateJWT() })
-		} else res.status(400).send('Invalid credentials')
+		} else res.status(400).send({ error: 'Invalid credentials' })
 	}
 }
 

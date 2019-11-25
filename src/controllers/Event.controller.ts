@@ -15,7 +15,8 @@ import socketServer from '../SocketServer'
 import { addEventToParticipant, usersExist } from '../util/Models.util'
 import { eventConstants } from '../util/SocketConstants.util'
 
-// TODO: JWT + authentication, Event fixing, https + raspberry pi + nginx + letsencrypt
+// unit tests + jwt routes DON'T PUT AUTHENTICATION ON EVENT THINGS
+// git branches + stille og roligt login form måske, se på React Final Form eller hvad det lige hed
 class EventController {
 	public createEvent = async (req: CreateEventInput, res: Response) => {
 		const participants = await usersExist(req.body.participants)
@@ -38,18 +39,18 @@ class EventController {
 					eventConstants.EVENT_CREATED + '[]',
 					event
 				)
-				res.status(201).send(event)
+				res.status(201).send({ event })
 			})
 			.catch((err: Error) => {
 				console.error('Create Event Error: ', err.message)
-				res.status(500).send(err.message)
+				res.status(500).send({ error: err.message })
 			})
 	}
 
 	public getEvents = async (req: GetEventInput, res: Response) => {
 		const events = await EventModel.find()
 
-		res.send(events)
+		res.send({ events })
 	}
 
 	public getEventById = async (req: GetEventByIdInput, res: Response) => {
@@ -57,7 +58,7 @@ class EventController {
 
 		if (!event) return res.status(404).send()
 
-		res.send(event)
+		res.send({ event })
 	}
 
 	public updateEvent = async (req: UpdateEventInput, res: Response) => {
@@ -150,7 +151,7 @@ class EventController {
 					})
 				}
 				socketServer.server.emit(eventConstants.EVENT_UPDATED, event)
-				res.send(event)
+				res.send({ event })
 			})
 			.catch((err: Error) => {
 				console.error('Update Event Error: ', err.message)
@@ -167,7 +168,7 @@ class EventController {
 
 		socketServer.server.emit(eventConstants.EVENT_DELETED, event._id)
 
-		res.send(event._id)
+		res.send({ event: { id: event._id } })
 	}
 }
 

@@ -87,20 +87,24 @@ EventSchema.pre('validate', function(this: IEventModel, next) {
 EventSchema.pre('remove', async function(this: IEventModel, next) {
 	const eventToRemove = this
 
-	UserModel.find({
+	const participants = await UserModel.find({
 		_id: {
 			$in: eventToRemove.participants
 		}
-	}).then(participants => {
-		for (const participant of participants) {
-			participant.events = participant.events.filter(
-				eventId => !eventId.equals(eventToRemove._id)
-			)
-			participant.save().catch((err: Error) => {
-				throw err
-			})
-		}
 	})
+
+	for (const participant of participants) {
+		participant.events = participant.events.filter(
+			eventId => !eventId.equals(eventToRemove._id)
+		)
+
+		try {
+			await participant.save()
+		} catch (error) {
+			console.error('Event pre remove - Event save', error.message)
+			throw error
+		}
+	}
 
 	next()
 })
@@ -109,6 +113,9 @@ EventSchema.methods.toJSON = function() {
 	const eventObject: IEventModel = this.toObject()
 	delete eventObject.__v
 	delete eventObject.deleted
+	const id = eventObject._id
+	delete eventObject._id
+	eventObject['id'] = id
 	return eventObject
 }
 

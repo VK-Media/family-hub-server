@@ -22,6 +22,9 @@ const FamilySchema = new mongoose.Schema(
 FamilySchema.methods.toJSON = function() {
 	const familyObject: IFamilyModel = this.toObject()
 	delete familyObject.__v
+	const id = familyObject._id
+	delete familyObject._id
+	familyObject['id'] = id
 	return familyObject
 }
 

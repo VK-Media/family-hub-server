@@ -15,7 +15,7 @@ export enum PeriodOption {
 	Daily = 'DAILY',
 	Weekly = 'WEEKLY',
 	Monthly = 'MONTHLY',
-	Yearly = 'Yearly'
+	Yearly = 'YEARLY'
 }
 
 export interface IEventException {
@@ -46,7 +46,6 @@ export interface IEventModel extends Document {
 	alert?: Date
 	participants: Types.ObjectId[]
 	deleted: boolean
-
 	// TODO: Deleted ALL objects, automatic deletion from database later, like facebook
 }
 

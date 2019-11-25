@@ -69,12 +69,15 @@ UserSchema.methods.toJSON = function() {
 	const userObject: IUserModel = this.toObject()
 	delete userObject.password
 	delete userObject.__v
+	const id = userObject._id
+	delete userObject._id
+	userObject['id'] = id
 	return userObject
 }
 
 UserSchema.methods.generateJWT = function() {
-	const person: IUserModel = this
-	const jwt = sign({ _id: person._id.toString() }, process.env.JWT_SECRET, {
+	const user: IUserModel = this
+	const jwt = sign({ id: user._id.toString() }, process.env.JWT_SECRET, {
 		expiresIn: '30 days',
 		notBefore: 2 // First valid after 2 seconds to avoid brute force attacks
 	})
@@ -105,10 +108,12 @@ UserSchema.pre('remove', async function(this: IUserModel, next) {
 		)
 
 		family.members = familyMembersWithoutUser
-
-		family.save().catch((err: Error) => {
-			throw err
-		})
+		try {
+			await family.save()
+		} catch (error) {
+			console.error('User Pre Remove - Family Save', error.message)
+			throw error
+		}
 	}
 
 	const events = await EventModel.find({
@@ -116,19 +121,24 @@ UserSchema.pre('remove', async function(this: IUserModel, next) {
 	})
 
 	if (events) {
-		events.forEach(async event => {
+		for (const event of events) {
 			// Event was only related to user to be removed, therefore should be removed completly
 			if (event.participants.length === 1) {
-				event.remove()
+				await event.remove()
 			} else {
 				event.participants = event.participants.filter(
 					participantId => !participantId.equals(userToRemove._id)
 				)
+				try {
+					await event.save()
+				} catch (error) {
+					console.error(
+						'User pre remove - Event update participants',
+						error.message
+					)
+				}
 			}
-			event.save().catch((err: Error) => {
-				throw err
-			})
-		})
+		}
 	}
 
 	next()

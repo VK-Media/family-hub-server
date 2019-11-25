@@ -29,13 +29,13 @@ export const jwtAuth = async (
 
 	try {
 		const decodedToken: any = verify(token, process.env.JWT_SECRET)
-		const user = await UserModel.findById(decodedToken._id)
+		const user = await UserModel.findById(decodedToken.id)
 
 		if (!user) throw new Error()
 
 		req['user'] = user
 		next()
 	} catch (error) {
-		return res.status(401).send('Invalid token')
+		return res.status(401).send({ error: 'Invalid token' })
 	}
 }

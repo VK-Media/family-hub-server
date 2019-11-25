@@ -24,24 +24,24 @@ class FamilyController {
 			.save()
 			.then(() => {
 				members.forEach(member => addFamilyToUser(member, family._id))
-				res.status(201).send(family)
+				res.status(201).send({ family })
 			})
 			.catch((err: Error) => {
-				res.status(400).send(err.message)
+				res.status(400).send({ error: err.message })
 			})
 	}
 
 	public getAllFamilies = async (req: GetAllFamiliesInput, res: Response) => {
 		const families = await FamilyModel.find()
 
-		res.send(families)
+		res.send({ families })
 	}
 	public getFamilyById = async (req: GetFamilyByIdInput, res: Response) => {
 		const family = await FamilyModel.findById(req.params.familyId)
 
 		if (!family) res.status(404).send()
 
-		res.send(family)
+		res.send({ family })
 	}
 
 	public updateFamily = async (req: UpdateFamilyInput, res: Response) => {
@@ -52,16 +52,16 @@ class FamilyController {
 		try {
 			if (req.body.newFamilyName) family.name = req.body.newFamilyName
 		} catch (error) {
-			res.status(400).send(error.message)
+			res.status(400).send({ error: error.message })
 		}
 
 		family
 			.save()
 			.then(() => {
-				res.send(family)
+				res.send({ family })
 			})
 			.catch((err: Error) => {
-				res.status(400).send(err.message)
+				res.status(400).send({ error: err.message })
 			})
 	}
 
@@ -72,7 +72,7 @@ class FamilyController {
 
 		await family.remove()
 
-		res.send(family._id)
+		res.send({ family: { id: family._id } })
 	}
 }
 
