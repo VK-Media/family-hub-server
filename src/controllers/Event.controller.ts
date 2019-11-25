@@ -16,7 +16,7 @@ import { addEventToParticipant, usersExist } from '../util/Models.util'
 import { eventConstants } from '../util/SocketConstants.util'
 
 // unit tests + jwt routes
-// git branches + stille og roligt login form måske, se på React Final Form eller hvad det lige hed
+// git branches + stille og roligt login form måske
 class EventController {
 	public createEvent = async (req: CreateEventInput, res: Response) => {
 		const participants = await usersExist(req.body.participants)
@@ -66,6 +66,7 @@ class EventController {
 
 		if (!event) return res.status(404).send()
 
+		// TODO: Use mongoose to partially update instead
 		if (req.body.title) event.title = req.body.title
 
 		if (req.body.description) event.description = req.body.description
@@ -99,32 +100,32 @@ class EventController {
 				if (repeat.onWeekdays)
 					event.timeDetails.repeat.onWeekdays = repeat.onWeekdays
 
-				if (repeat.exceptions) {
-					const exceptions = req.body.timeDetails.repeat.exceptions
-					for (const exception of exceptions) {
-						let startTime: Date
-						exception.startTime
-							? (startTime = exception.startTime)
-							: (startTime = event.timeDetails.startTime)
+				// if (repeat.exception) {
+				// 	const exceptions = req.body.timeDetails.repeat.exception
+				// 	for (const exception of exception) {
+				// 		let startTime: Date
+				// 		exception.startTime
+				// 			? (startTime = exception.startTime)
+				// 			: (startTime = event.timeDetails.startTime)
 
-						let endTime: Date
-						exception.endTime
-							? (endTime = exception.endTime)
-							: (endTime = event.timeDetails.endTime)
+				// 		let endTime: Date
+				// 		exception.endTime
+				// 			? (endTime = exception.endTime)
+				// 			: (endTime = event.timeDetails.endTime)
 
-						let removed: boolean
-						exception.removed ? (removed = true) : (removed = false)
+				// 		let removed: boolean
+				// 		exception.removed ? (removed = true) : (removed = false)
 
-						const newEventException: IEventException = {
-							startTime,
-							endTime,
-							removed
-						}
-						event.timeDetails.repeat.exceptions.push(
-							newEventException
-						)
-					}
-				}
+				// 		const newEventException: IEventException = {
+				// 			startTime,
+				// 			endTime,
+				// 			removed
+				// 		}
+				// 		event.timeDetails.repeat.exceptions.push(
+				// 			newEventException
+				// 		)
+				// 	}
+				// }
 			}
 		}
 

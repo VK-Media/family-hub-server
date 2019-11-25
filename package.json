@@ -6,7 +6,8 @@
 	"scripts": {
 		"build": "tsc -p .",
 		"start": "node ./build/server.js",
-		"dev": "nodemon"
+		"dev": "nodemon -r dotenv/config src/Server.ts",
+		"dev:debug": "nodemon --inspect -r dotenv/config src/Server.ts"
 	},
 	"dependencies": {
 		"bcrypt": "^3.0.6",

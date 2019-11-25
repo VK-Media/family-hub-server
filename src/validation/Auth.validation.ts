@@ -25,9 +25,8 @@ export const jwtAuth = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	const token = req.headers.authorization.split('Bearer ')[1] // Seperate Bearer and space from token
-
 	try {
+		const token = req.headers.authorization.split('Bearer ')[1] // Seperate Bearer and space from token
 		const decodedToken: any = verify(token, process.env.JWT_SECRET)
 		const user = await UserModel.findById(decodedToken.id)
 

@@ -1,6 +1,10 @@
 import { isBoolean, isIn, isInt, isISO8601 } from 'validator'
 
-import { PeriodOption, WeekDays } from '../interfaces/Event.interfaces'
+import {
+	PeriodOption,
+	TimeDetailsUpdate,
+	WeekDays
+} from '../interfaces/Event.interfaces'
 import { isObject } from './Objects.util'
 
 const invalidISO8601Message = 'Not following ISO8601 standard'
@@ -145,8 +149,11 @@ export const validateEventTimeDetailsUpdate = (timeDetails: any) => {
 
 	// If errors were found from validateEventTimeDetails then include these aswell as exceptionErrors
 	if (errors) {
+		console.log('errors', errors, 'exceptionserrors \n', exceptionErrors)
+
 		return { ...errors, ...exceptionErrors }
 	} else {
+		console.log('exceptionserrors \n', exceptionErrors)
 		// No other errors from other fields than exceptions were found,
 		// Then check if errors were found in exceptions, and return them or false if not
 		if (Object.keys(exceptionErrors.repeat.exceptions).length !== 0) {

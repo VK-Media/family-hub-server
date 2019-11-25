@@ -16,6 +16,7 @@ class FamilyRoutes {
 	public routes(app: Application): void {
 		app.route('/family')
 			.post(
+				jwtAuth,
 				createFamilyRules(),
 				validate,
 				this.familyController.createFamily
@@ -24,16 +25,19 @@ class FamilyRoutes {
 
 		app.route('/family/:familyId')
 			.get(
+				jwtAuth,
 				getFamilyByIdRules(),
 				validate,
 				this.familyController.getFamilyById
 			)
 			.patch(
+				jwtAuth,
 				updateFamilyRules(),
 				validate,
 				this.familyController.updateFamily
 			)
 			.delete(
+				jwtAuth,
 				deleteFamilyByIdRules(),
 				validate,
 				this.familyController.deleteFamily
