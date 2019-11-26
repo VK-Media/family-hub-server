@@ -1,5 +1,4 @@
 import { Response } from 'express'
-import { Types } from 'mongoose'
 
 import {
 	CreateEventInput,
@@ -9,14 +8,11 @@ import {
 	IEventException,
 	UpdateEventInput
 } from '../interfaces/Event.interfaces'
-import { IUserModel } from '../interfaces/User.interfaces'
 import { EventModel } from '../models/index'
 import socketServer from '../SocketServer'
 import { addEventToParticipant, usersExist } from '../util/Models.util'
 import { eventConstants } from '../util/SocketConstants.util'
 
-// unit tests + jwt routes
-// git branches + stille og roligt login form måske
 class EventController {
 	public createEvent = async (req: CreateEventInput, res: Response) => {
 		const participants = await usersExist(req.body.participants)
@@ -66,91 +62,29 @@ class EventController {
 
 		if (!event) return res.status(404).send()
 
-		// TODO: Use mongoose to partially update instead
-		if (req.body.title) event.title = req.body.title
-
-		if (req.body.description) event.description = req.body.description
-
-		if (req.body.location) event.location = req.body.location
-
-		if (req.body.timeDetails) {
-			const timeDetails = req.body.timeDetails
-
-			if (timeDetails.startTime)
-				event.timeDetails.startTime = timeDetails.startTime
-
-			if (timeDetails.endTime)
-				event.timeDetails.endTime = timeDetails.endTime
-
-			// Validation ensures that if allDay is set to true, req.body.timeDetails startTime and endTime is set correctly
-			if (timeDetails.allDay) {
-				event.timeDetails.allDay = true
-				event.timeDetails.startTime = timeDetails.startTime
-				event.timeDetails.endTime = timeDetails.endTime
-			}
-
-			if (timeDetails.repeat) {
-				const repeat = req.body.timeDetails.repeat
-				if (repeat.endRepeat)
-					event.timeDetails.repeat.endRepeat = repeat.endRepeat
-
-				if (repeat.frequency)
-					event.timeDetails.repeat.frequency = repeat.frequency
-
-				if (repeat.onWeekdays)
-					event.timeDetails.repeat.onWeekdays = repeat.onWeekdays
-
-				// if (repeat.exception) {
-				// 	const exceptions = req.body.timeDetails.repeat.exception
-				// 	for (const exception of exception) {
-				// 		let startTime: Date
-				// 		exception.startTime
-				// 			? (startTime = exception.startTime)
-				// 			: (startTime = event.timeDetails.startTime)
-
-				// 		let endTime: Date
-				// 		exception.endTime
-				// 			? (endTime = exception.endTime)
-				// 			: (endTime = event.timeDetails.endTime)
-
-				// 		let removed: boolean
-				// 		exception.removed ? (removed = true) : (removed = false)
-
-				// 		const newEventException: IEventException = {
-				// 			startTime,
-				// 			endTime,
-				// 			removed
-				// 		}
-				// 		event.timeDetails.repeat.exceptions.push(
-				// 			newEventException
-				// 		)
-				// 	}
-				// }
-			}
+		if (!(await usersExist(req.body.participants))) {
+			return res
+				.status(400)
+				.send({ error: 'Participants does not exist' })
 		}
 
-		if (req.body.alert) event.alert = req.body.alert
-
-		let participants: false | IUserModel[]
-		if (req.body.participants) {
-			participants = await usersExist(req.body.participants)
-			if (participants) {
-				const participantIds: Types.ObjectId[] = req.body.participants.map(
-					(participantId: string) => Types.ObjectId(participantId)
-				)
-
-				event.participants = participantIds
+		// TODO: Check to see if this works properly
+		const exception = req.body.timeDetails.repeat.exception
+		if (exception) {
+			const newEventException: IEventException = {
+				startTime: exception.startTime
+					? exception.startTime
+					: event.timeDetails.startTime,
+				endTime: exception.endTime
+					? exception.endTime
+					: event.timeDetails.endTime,
+				removed: exception.removed ? exception.removed : false
 			}
+			event.timeDetails.repeat.exceptions.push(newEventException)
 		}
-
-		event
-			.save()
+		await event
+			.updateOne({ ...req.body })
 			.then(() => {
-				if (participants) {
-					participants.forEach(partcipant => {
-						addEventToParticipant(partcipant, event._id)
-					})
-				}
 				socketServer.server.emit(eventConstants.EVENT_UPDATED, event)
 				res.send({ event })
 			})

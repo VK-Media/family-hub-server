@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import { validationResult } from 'express-validator'
 
 export interface ObjectToValidate {
-	test: (value: any) => boolean
+	test: (value: any, userInput: any) => boolean
 	errorMessage: string
 	required?: boolean
 }
@@ -30,8 +30,6 @@ export const checkValidationSchema = (
 	errorsOutput: {}
 ) => {
 	for (const key of Object.keys(validationObject)) {
-		console.log(key)
-
 		if (!validationObject[key].hasOwnProperty('test')) {
 			checkValidationSchema(
 				validationObject[key],
