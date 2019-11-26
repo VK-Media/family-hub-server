@@ -12,10 +12,10 @@ export enum WeekDays { // TODO: Find a more optimal way to do this
 }
 
 export enum PeriodOption {
-	Daily = 'DAILY',
-	Weekly = 'WEEKLY',
-	Monthly = 'MONTHLY',
-	Yearly = 'YEARLY'
+	Daily = 'Daily',
+	Weekly = 'Weekly',
+	Monthly = 'Monthly',
+	Yearly = 'Yearly'
 }
 
 export interface IEventException {
@@ -97,7 +97,7 @@ export interface TimeDetailsUpdate {
 		frequency?: PeriodOption
 		onWeekdays?: WeekDays[] // NOTE: conditional based on frequency
 		endRepeat?: Date
-		exceptions?: IEventExceptionUpdate[]
+		exception?: IEventExceptionUpdate
 	}
 }
 

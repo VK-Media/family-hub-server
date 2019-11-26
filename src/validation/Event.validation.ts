@@ -7,9 +7,10 @@ import {
 	eventTitleMaxLength
 } from '../util/Schemas.util'
 import {
-	validateEventTimeDetails,
-	validateEventTimeDetailsUpdate
-} from '../util/Validation.util'
+	timeDetailsCreate,
+	timeDetailsUpdate
+} from './Event.validation.schemas'
+import { checkValidationSchema } from './Validator'
 
 export const createEventRules = () => {
 	return [
@@ -33,8 +34,12 @@ export const createEventRules = () => {
 			.custom(timeDetails => {
 				if (!isObject(timeDetails))
 					return Promise.reject('Not a valid object')
-				const errors = validateEventTimeDetails(timeDetails)
-				if (errors) return Promise.reject(errors)
+				const errors = {}
+
+				checkValidationSchema(timeDetailsCreate, timeDetails, errors)
+
+				if (Object.keys(errors).length !== 0)
+					return Promise.reject(errors)
 				else return true
 			}),
 		check('alert')
@@ -99,8 +104,12 @@ export const updateEventRules = () => {
 			.custom(timeDetails => {
 				if (!isObject(timeDetails))
 					return Promise.reject('Not a valid object')
-				const errors = validateEventTimeDetailsUpdate(timeDetails)
-				if (errors) return Promise.reject(errors)
+				const errors = {}
+
+				checkValidationSchema(timeDetailsUpdate, timeDetails, errors)
+
+				if (Object.keys(errors).length !== 0)
+					return Promise.reject(errors)
 				else return true
 			}),
 		check('alert')

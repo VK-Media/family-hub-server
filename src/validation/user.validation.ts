@@ -1,5 +1,6 @@
 import { check } from 'express-validator'
 import { Mode } from '../interfaces/User.interfaces'
+import { isObject } from '../util/Objects.util'
 
 export const createUserRules = () => {
 	return [
@@ -48,10 +49,16 @@ export const updateUserRules = () => {
 			.optional()
 			.isLength({ min: 3 })
 			.withMessage('Minimum length of 3 characters'),
-		check('newEmail')
+		check('newCredentials')
+			.optional()
+			.custom(newCredentials => {
+				return isObject(newCredentials)
+			})
+			.withMessage('Invalid object'),
+		check('newCredentials.newEmail')
 			.optional()
 			.isEmail(),
-		check('newPassword')
+		check('newCredentials.newPassword')
 			.optional()
 			.isLength({ min: 8, max: 100 })
 			.withMessage('Minimum length of 8 characters and max of 100'),
