@@ -7,21 +7,26 @@ const invalidISO8601Message = 'Not following ISO8601 standard'
 
 export const timeDetailsCreate: ValidateSchema = {
 	startTime: {
-		test: (startTime, userInput) => {
-			// allDay parameter is not set startTime should be set
-			if (!userInput.allDay) return false
-			else return isISO8601(startTime, { strict: true })
+		required: userInput => {
+			// If all day is set startTime is NOT required
+			return !userInput.allDay
 		},
-		errorMessage: invalidISO8601Message
+		test: (startTime, userInput) => {
+			const valid = isISO8601(startTime, { strict: true })
+			if (!valid && !userInput.allDay) return invalidISO8601Message
+			else return ''
+		}
 	},
 	endTime: {
-		required: true,
-		test: (endTime, userInput) => {
-			// allDay parameter is not set startTime should be set
-			if (!userInput.allDay) return false
-			else return isISO8601(endTime, { strict: true })
+		required: userInput => {
+			// If all day is set startTime is NOT required
+			return !userInput.allDay
 		},
-		errorMessage: invalidISO8601Message
+		test: (endTime, userInput) => {
+			const valid = isISO8601(endTime, { strict: true })
+			if (!valid && !userInput.allDay) return invalidISO8601Message
+			else return ''
+		}
 	},
 	allDay: {
 		test: (allDay, userInput) => {
@@ -34,19 +39,24 @@ export const timeDetailsCreate: ValidateSchema = {
 				userInput.startTime = startTimeDate
 				userInput.endTime = endTimeDate
 				userInput.allDay = true
-				return true
-			} else return false
-		},
-		errorMessage: invalidISO8601Message
+				return ''
+			} else return invalidISO8601Message
+		}
 	},
 	repeat: {
-		// TODO: Only check the nested objects if repeat is required, which it isn't
 		frequency: {
-			required: true,
-			test: frequency => isIn(frequency, Object.keys(PeriodOption)),
+			required: userInput => {
+				if (userInput.repeat) return true
+				else return false
+			},
+			test: frequency => {
+				if (isIn(frequency, Object.keys(PeriodOption))) {
+					return ''
+				} else {
+					return 'Invalid frequency. Options include ' + Object.keys(PeriodOption)
+				}
+			},
 			errorMessage:
-				'Invalid frequency. Options include ' +
-				Object.keys(PeriodOption)
 		},
 		onWeekdays: {
 			test: onWeekdays => {
@@ -63,7 +73,8 @@ export const timeDetailsCreate: ValidateSchema = {
 		endRepeat: {
 			test: endRepeat => isISO8601(endRepeat, { strict: true }),
 			errorMessage: invalidISO8601Message
-		}
+		},
+		parentIsNotRequired: true
 	}
 }
 
@@ -97,7 +108,8 @@ export const timeDetailsUpdate: ValidateSchema = {
 			test: frequency => isIn(frequency, Object.keys(PeriodOption)),
 			errorMessage:
 				'Invalid frequency. Options include ' +
-				Object.keys(PeriodOption)
+				Object.keys(PeriodOption),
+			required: true
 		},
 		onWeekdays: {
 			test: onWeekdays => {
@@ -128,6 +140,7 @@ export const timeDetailsUpdate: ValidateSchema = {
 				test: removed => isBoolean(removed),
 				errorMessage: 'Invalid boolean value'
 			}
-		}
+		},
+		parentIsNotRequired: false
 	}
 }

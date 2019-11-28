@@ -2,9 +2,8 @@ import { NextFunction, Request, Response } from 'express'
 import { validationResult } from 'express-validator'
 
 export interface ObjectToValidate {
-	test: (value: any, userInput: any) => boolean
-	errorMessage: string
-	required?: boolean
+	test: (value: any, userInput: any) => string
+	required?: (userInput: any) => boolean
 }
 
 export interface ValidateSchema {
@@ -30,21 +29,28 @@ export const checkValidationSchema = (
 	errorsOutput: {}
 ) => {
 	for (const key of Object.keys(validationObject)) {
+		// Recursive call
 		if (!validationObject[key].hasOwnProperty('test')) {
 			checkValidationSchema(
 				validationObject[key],
-				userInput && userInput[key],
+				userInput,
 				errorsOutput
 			)
 			continue
 		}
+
+		// Check to see if input has been defined and if it satisfies the test
 		if (validationObject[key] && userInput && userInput[key]) {
 			const result = validationObject[key].test(userInput[key], userInput)
-			if (!result) {
+			if (result !== '') {
 				errorsOutput[key] = validationObject[key].errorMessage
 			}
 		} else {
-			if (validationObject[key].required) {
+			// If input is not defined, check if it was a required field and that the parent is a required field
+			if (
+				validationObject[key].required &&
+				validationObject[key].required(userInput[key])
+			) {
 				errorsOutput[key] = 'Required'
 				break
 			}

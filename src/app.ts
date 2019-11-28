@@ -15,7 +15,6 @@ import socketServer from './SocketServer'
 
 class App {
 	public app: express.Application
-	public mongoUrl: string = process.env.MONGODB_URL
 	public userRoutes: UserRoutes = new UserRoutes()
 	public familyRoutes: FamilyRoutes = new FamilyRoutes()
 	public eventRoutes: EventRoutes = new EventRoutes()
@@ -23,6 +22,10 @@ class App {
 	public authRoutes: AuthRoutes = new AuthRoutes()
 
 	constructor() {
+		if (process.env.NODE_ENV !== 'production') {
+			require('dotenv').config()
+		}
+
 		this.app = express()
 		this.createSocketIOServer()
 		this.config()
@@ -49,7 +52,12 @@ class App {
 	}
 
 	private mongoSetup(): void {
-		connect(this.mongoUrl, {
+		var nodeEnvironment = process.env.NODE_ENV.toUpperCase()
+
+		const databaseConnectionString =
+			process.env['MONGODB_URL_' + nodeEnvironment]
+
+		connect(databaseConnectionString, {
 			useNewUrlParser: true,
 			useUnifiedTopology: true,
 			useCreateIndex: true,
