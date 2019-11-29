@@ -38,7 +38,16 @@ const EventSchema = new mongoose.Schema(
 				frequency: {
 					type: String,
 					enum: Object.keys(PeriodOption),
-					required: true
+					required() {
+						const repeatValues = Object.values(
+							this.timeDetails.repeat.toObject()
+						)
+						const userSetFields = repeatValues.filter(val => {
+							if (val !== undefined) return val
+						})
+						// If The user has not specified anything in repeat object this field is not required
+						return userSetFields.length === 0 ? false : true
+					}
 				},
 				onWeekdays: [
 					{

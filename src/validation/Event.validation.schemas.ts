@@ -53,39 +53,47 @@ export const timeDetailsCreate: ValidateSchema = {
 				if (isIn(frequency, Object.keys(PeriodOption))) {
 					return ''
 				} else {
-					return 'Invalid frequency. Options include ' + Object.keys(PeriodOption)
+					return (
+						'Invalid frequency. Options include ' +
+						Object.keys(PeriodOption)
+					)
 				}
-			},
-			errorMessage:
+			}
 		},
 		onWeekdays: {
 			test: onWeekdays => {
 				for (const weekday of onWeekdays) {
 					if (!isIn(weekday, Object.keys(WeekDays))) {
-						return false
+						return (
+							'Invalid Weekday. Options include ' +
+							Object.keys(WeekDays)
+						)
 					}
 				}
-				return true
-			},
-			errorMessage:
-				'Invalid Weekday. Options include ' + Object.keys(WeekDays)
+				return ''
+			}
 		},
 		endRepeat: {
-			test: endRepeat => isISO8601(endRepeat, { strict: true }),
-			errorMessage: invalidISO8601Message
-		},
-		parentIsNotRequired: true
+			test: endRepeat => {
+				if (isISO8601(endRepeat, { strict: true })) return ''
+				else return invalidISO8601Message
+			}
+		}
 	}
 }
 
 export const timeDetailsUpdate: ValidateSchema = {
 	startTime: {
-		test: startTime => isISO8601(startTime, { strict: true }),
-		errorMessage: invalidISO8601Message
+		test: startTime => {
+			if (isISO8601(startTime, { strict: true })) return ''
+			else return invalidISO8601Message
+		}
 	},
 	endTime: {
-		test: endTime => isISO8601(endTime, { strict: true }),
-		errorMessage: invalidISO8601Message
+		test: endTime => {
+			if (isISO8601(endTime, { strict: true })) return ''
+			else return invalidISO8601Message
+		}
 	},
 	allDay: {
 		test: (allDay, userInput) => {
@@ -98,49 +106,60 @@ export const timeDetailsUpdate: ValidateSchema = {
 				userInput.startTime = startTimeDate
 				userInput.endTime = endTimeDate
 				userInput.allDay = true
-				return true
-			} else return false
-		},
-		errorMessage: invalidISO8601Message
+				return ''
+			} else return invalidISO8601Message
+		}
 	},
 	repeat: {
 		frequency: {
-			test: frequency => isIn(frequency, Object.keys(PeriodOption)),
-			errorMessage:
-				'Invalid frequency. Options include ' +
-				Object.keys(PeriodOption),
-			required: true
+			test: frequency => {
+				if (isIn(frequency, Object.keys(PeriodOption))) return ''
+				else {
+					return (
+						'Invalid frequency. Options include ' +
+						Object.keys(PeriodOption)
+					)
+				}
+			}
 		},
 		onWeekdays: {
 			test: onWeekdays => {
 				for (const weekday of onWeekdays) {
 					if (!isIn(weekday, Object.keys(WeekDays))) {
-						return false
+						return (
+							'Invalid Weekday. Options include ' +
+							Object.keys(WeekDays)
+						)
 					}
 				}
-				return true
-			},
-			errorMessage:
-				'Invalid Weekday. Options include ' + Object.keys(WeekDays)
+				return ''
+			}
 		},
 		endRepeat: {
-			test: endRepeat => isISO8601(endRepeat, { strict: true }),
-			errorMessage: invalidISO8601Message
+			test: endRepeat => {
+				if (isISO8601(endRepeat, { strict: true })) return ''
+				else return invalidISO8601Message
+			}
 		},
 		exception: {
 			startTime: {
-				test: startTime => isISO8601(startTime, { strict: true }),
-				errorMessage: invalidISO8601Message
+				test: startTime => {
+					if (isISO8601(startTime, { strict: true })) return ''
+					else return invalidISO8601Message
+				}
 			},
 			endTime: {
-				test: endTime => isISO8601(endTime, { strict: true }),
-				errorMessage: invalidISO8601Message
+				test: endTime => {
+					if (isISO8601(endTime, { strict: true })) return ''
+					else return invalidISO8601Message
+				}
 			},
 			removed: {
-				test: removed => isBoolean(removed),
-				errorMessage: 'Invalid boolean value'
+				test: removed => {
+					if (isBoolean(removed)) return ''
+					else return 'Invalid bool value'
+				}
 			}
-		},
-		parentIsNotRequired: false
+		}
 	}
 }
