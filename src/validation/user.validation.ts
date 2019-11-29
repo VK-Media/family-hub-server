@@ -19,8 +19,8 @@ export const createUserRules = () => {
 			.exists()
 			.withMessage('Password is required')
 			.bail()
-			.isLength({ min: 8, max: 100 })
-			.withMessage('Minimum length of 8 characters and max of 100'),
+			.isLength({ min: 8 })
+			.withMessage('Minimum length of 8 characters'),
 		check('profileColor')
 			.optional()
 			.isHexColor(),

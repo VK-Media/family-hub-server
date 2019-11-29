@@ -88,7 +88,7 @@ class UserController {
 				if (req.body.newCredentials.newPassword)
 					userCredentials.password =
 						req.body.newCredentials.newPassword
-						
+
 				await userCredentials.save().catch(err => {
 					throw err
 				})
