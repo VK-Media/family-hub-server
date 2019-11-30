@@ -47,12 +47,10 @@ export const createEventRules = () => {
 			.isISO8601({ strict: true })
 			.withMessage('Not a valid date / Not following ISO8601 standard'),
 		check('participants')
-			.exists()
-			.withMessage('Required')
-			.bail()
+			.optional()
 			.isArray({ min: 1 })
 			.withMessage(
-				"An event can't exist without atleast one participant. Provide array of participants"
+				'Provide array of participants, with atleast one participant'
 			)
 			.custom((participants: string[]) => {
 				for (const participant of participants) {

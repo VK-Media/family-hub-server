@@ -45,7 +45,7 @@ const EventSchema = new mongoose.Schema(
 						const userSetFields = repeatValues.filter(val => {
 							if (val !== undefined) return val
 						})
-						// If The user has not specified anything in repeat object this field is not required
+						// If the user has not specified anything in repeat object this field is not required
 						return userSetFields.length === 0 ? false : true
 					}
 				},
@@ -68,6 +68,11 @@ const EventSchema = new mongoose.Schema(
 		},
 		alert: {
 			type: Date
+		},
+		owner: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: userRef,
+			required: true
 		},
 		participants: [{ type: mongoose.Schema.Types.ObjectId, ref: userRef }],
 		deleted: {

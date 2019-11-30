@@ -1,4 +1,4 @@
-import { hashSync,  } from 'bcrypt'
+import { hashSync } from 'bcrypt'
 import { Types } from 'mongoose'
 
 import { IFamilyModel } from '../interfaces/Family.interfaces'
@@ -46,13 +46,13 @@ export const addEventToParticipant = (
 	}
 }
 
-export const addMemberToFamily = (
+export const addMemberToFamily = async (
 	family: IFamilyModel,
 	memberId: Types.ObjectId
 ) => {
 	if (!family.members.includes(memberId)) {
 		family.members.push(memberId)
-		family.save().catch((err: Error) => {
+		await family.save().catch((err: Error) => {
 			throw err
 		})
 	}

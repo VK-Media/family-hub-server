@@ -79,7 +79,9 @@ UserSchema.methods.generateJWT = function() {
 UserSchema.pre('remove', async function(this: IUserModel, next) {
 	const userToRemove = this
 
-	await CredentialModel.findByIdAndRemove(userToRemove.credentials)
+	await CredentialModel.findById(userToRemove.credentials)
+		.remove()
+		.exec()
 
 	const family = await FamilyModel.findById(userToRemove.family)
 
@@ -117,6 +119,7 @@ UserSchema.pre('remove', async function(this: IUserModel, next) {
 						'User pre remove - Event update participants',
 						error.message
 					)
+					throw error
 				}
 			}
 		}

@@ -39,7 +39,7 @@ class UserController {
 
 			await user.save()
 
-			if (family) addMemberToFamily(family, user._id)
+			if (family) await addMemberToFamily(family, user._id)
 
 			res.status(201).send({ user, jwt: user.generateJWT() })
 		} catch (err) {

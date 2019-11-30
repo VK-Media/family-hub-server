@@ -1,5 +1,6 @@
 import { Request } from 'express'
 import { Document, Types } from 'mongoose'
+import { IUserModel } from './User.interfaces'
 
 export enum WeekDays { // TODO: Find a more optimal way to do this
 	Monday = 'Monday',
@@ -44,7 +45,8 @@ export interface IEventModel extends Document {
 	location?: string // TODO: Google API for location
 	timeDetails: TimeDetails
 	alert?: Date
-	participants: Types.ObjectId[]
+	owner: Types.ObjectId
+	participants?: Types.ObjectId[]
 	deleted: boolean
 	// TODO: Deleted ALL objects, automatic deletion from database later, like facebook
 }
@@ -68,8 +70,9 @@ export interface CreateEventInput extends Request {
 		location?: string
 		timeDetails: CreateTimeDetails
 		alert?: Date
-		participants: string[]
+		participants?: string[]
 	}
+	user: IUserModel
 }
 
 // tslint:disable-next-line: no-empty-interface
@@ -113,10 +116,12 @@ export interface UpdateEventInput extends Request {
 		alert?: Date
 		participants?: string[]
 	}
+	user: IUserModel
 }
 
 export interface DeleteEventInput extends Request {
 	params: {
 		eventId: string
 	}
+	user: IUserModel
 }

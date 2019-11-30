@@ -6,7 +6,7 @@
 	"scripts": {
 		"build": "tsc -p .",
 		"start": "NODE_ENV=production node ./build/server.js",
-		"test": "NODE_ENV=test jest --testTimeout=10000",
+		"test": "NODE_ENV=test jest --runInBand",
 		"test:watch": "NODE_ENV=test jest --watch",
 		"dev": "nodemon src/Server.ts",
 		"dev:debug": "nodemon --inspect src/Server.ts"

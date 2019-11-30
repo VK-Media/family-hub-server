@@ -1,7 +1,8 @@
 import mongoose from 'mongoose'
 import request from 'supertest'
-import app from '../../src/app'
-import { UserModel } from '../../src/models'
+import app from '../../src/App'
+import { UserModel } from '../../src/models/index'
+
 const testUser = {
 	name: 'Mr. Test',
 	email: 'test@example.com',
@@ -9,27 +10,44 @@ const testUser = {
 }
 
 beforeAll(async () => {
-	// UserModel.db.
+	const users = await UserModel.find()
+	if (users) {
+		for (const user of users) {
+			await user.remove()
+		}
+	}
+})
+
+afterAll(async () => {
+	await mongoose.connection.close()
 })
 
 describe('Login endpoint', () => {
-	it('should create user to login with', async () => {
+	test('should create user to login with', async () => {
+		console.log('LOGIN ENDPOINT, BEFORE')
 		const res = await request(app)
 			.post('/user')
 			.send(testUser)
-		expect(res.status).toEqual(201)
+			.expect(201)
+
 		expect(res.body).toHaveProperty('user')
 		expect(res.body).toHaveProperty('jwt')
-		console.log(res)
+		console.log('LOGIN ENDPOINT, AFTER')
 	})
-	it('should create jwt and send it back', async () => {
+})
+
+describe('login endpoint test', () => {
+	test('should create jwt and send it back', async () => {
+		console.log('LOGIN ENDPOINT JWT, BEFORE')
+
 		const res = await request(app)
-			.post('/auth/login')
+			.post('/auth')
 			.send({
 				email: testUser.email,
 				password: testUser.password
 			})
-		expect(res.status).toEqual(200)
+			.expect(200)
 		expect(res.body).toHaveProperty('jwt')
+		console.log('LOGIN ENDPOINT JWT, AFTER')
 	})
 })

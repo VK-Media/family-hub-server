@@ -1,4 +1,5 @@
 import { Response } from 'express'
+import { Types } from 'mongoose'
 
 import {
 	CreateEventInput,
@@ -8,14 +9,34 @@ import {
 	IEventException,
 	UpdateEventInput
 } from '../interfaces/Event.interfaces'
+import { IUserModel } from '../interfaces/User.interfaces'
 import { EventModel } from '../models/index'
 import socketServer from '../SocketServer'
 import { addEventToParticipant, usersExist } from '../util/Models.util'
 import { eventConstants } from '../util/SocketConstants.util'
 
+// TODO: Make more test coverage (A LOT MORE) + MongoDB container (docker-compose or something)
 class EventController {
+	public addOwnerAsParticipants = (
+		participants,
+		ownerId: string
+	): Types.ObjectId[] => {
+		if (!participants) participants = []
+
+		participants.push(ownerId) // Add owner to participants
+		participants = [...new Set(participants)] // Remove duplicates
+
+		return participants
+	}
 	public createEvent = async (req: CreateEventInput, res: Response) => {
-		const participants = await usersExist(req.body.participants)
+		req.body.participants = this.addOwnerAsParticipants(
+			req.body.participants,
+			req.user._id.toString()
+		).map(participantId => participantId.toString())
+
+		const participants: false | IUserModel[] = await usersExist(
+			req.body.participants
+		)
 
 		if (!participants) {
 			return res
@@ -25,12 +46,15 @@ class EventController {
 
 		const event = new EventModel(req.body)
 
+		event.owner = req.user._id
+
 		event
 			.save()
 			.then(() => {
 				participants.forEach(partcipant => {
 					addEventToParticipant(partcipant, event._id)
 				})
+
 				socketServer.server.emit(
 					eventConstants.EVENT_CREATED + '[]',
 					event

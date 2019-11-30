@@ -61,6 +61,11 @@ export const timeDetailsCreate: ValidateSchema = {
 			}
 		},
 		onWeekdays: {
+			required: userInput => {
+				if (userInput.repeat.frequency === PeriodOption.Weekly)
+					return true
+				else return false
+			},
 			test: onWeekdays => {
 				for (const weekday of onWeekdays) {
 					if (!isIn(weekday, Object.keys(WeekDays))) {
@@ -123,6 +128,11 @@ export const timeDetailsUpdate: ValidateSchema = {
 			}
 		},
 		onWeekdays: {
+			required: userInput => {
+				if (userInput.repeat.frequency === PeriodOption.Weekly)
+					return true
+				else return false
+			},
 			test: onWeekdays => {
 				for (const weekday of onWeekdays) {
 					if (!isIn(weekday, Object.keys(WeekDays))) {
