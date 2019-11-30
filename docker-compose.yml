@@ -1,13 +1,20 @@
 version: '3'
 services:
-    test_db:
-        image: mongo
+    dev_db:
+        image: postgres
         restart: always
         environment:
-            MONGO_INITDB_ROOT_USERNAME: admin-user
-            MONGO_INITDB_ROOT_PASSWORD: admin-password
-            MONGO_INITDB_DATABASE: family-test
+            POSTGRES_USER: dev-admin-user
+            POSTGRES_PASSWORD: dev-admin-password
+            POSTGRES_DB: dev-family-hub-server
         ports:
-            - '27017:27017'
-        volumes:
-            - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro # ro = readonly
+            - '5432:5432'
+    test_db:
+        image: postgres
+        restart: always
+        environment:
+            POSTGRES_USER: test-admin-user
+            POSTGRES_PASSWORD: test-admin-password
+            POSTGRES_DB: test-family-hub-server
+        ports:
+            - '5433:5432'

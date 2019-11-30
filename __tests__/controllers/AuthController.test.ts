@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import request from 'supertest'
-import app from '../../src/App'
+import expressApp from '../../src/App'
 import { UserModel } from '../../src/models/index'
 
 const testUser = {
@@ -25,7 +25,7 @@ afterAll(async () => {
 describe('Login endpoint', () => {
 	test('should create user to login with', async () => {
 		console.log('LOGIN ENDPOINT, BEFORE')
-		const res = await request(app)
+		const res = await request(expressApp)
 			.post('/user')
 			.send(testUser)
 			.expect(201)
@@ -40,7 +40,7 @@ describe('login endpoint test', () => {
 	test('should create jwt and send it back', async () => {
 		console.log('LOGIN ENDPOINT JWT, BEFORE')
 
-		const res = await request(app)
+		const res = await request(expressApp)
 			.post('/auth')
 			.send({
 				email: testUser.email,

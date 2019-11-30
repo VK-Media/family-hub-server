@@ -1,7 +1,7 @@
-import app from './App'
+import expressApp from './App'
 
 const PORT = process.env.HTTP_PORT || 5000
 
-app.listen(PORT, () => {
+expressApp.listen(PORT, () => {
 	console.log('🚀 Server is running on: ' + PORT)
 })
