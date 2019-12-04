@@ -52,7 +52,7 @@ class App {
 	}
 
 	private mongoSetup(): void {
-		var nodeEnvironment = process.env.NODE_ENV.toUpperCase()
+		const nodeEnvironment = process.env.NODE_ENV.toUpperCase()
 
 		const databaseConnectionString =
 			process.env['MONGODB_URL_' + nodeEnvironment]

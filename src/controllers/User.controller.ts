@@ -26,12 +26,11 @@ class UserController {
 			}
 		}
 
-		const credential = new CredentialModel({
-			email: req.body.email,
-			password: req.body.password
-		})
-
 		try {
+			const credential = new CredentialModel({
+				email: req.body.email,
+				password: req.body.password
+			})
 			await credential.save()
 			req.body['credentials'] = credential._id
 
