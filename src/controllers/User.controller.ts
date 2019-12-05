@@ -12,13 +12,13 @@ import {
 	Mode,
 	UpdateUserInput
 } from '../interfaces/User.interfaces'
-import CredentialModel from '../models/Credential.model'
 import { EventModel, FamilyModel, UserModel } from '../models/index'
 import { addMemberToFamily, familyExist } from '../util/Models.util'
 
 class UserController {
 	public createUser = async (req: CreateUserInput, res: Response) => {
 		let family: false | IFamilyModel
+
 		if (req.body.family) {
 			family = await familyExist(req.body.family)
 			if (!family) {
@@ -27,13 +27,6 @@ class UserController {
 		}
 
 		try {
-			const credential = new CredentialModel({
-				email: req.body.email,
-				password: req.body.password
-			})
-			await credential.save()
-			req.body['credentials'] = credential._id
-
 			const user = new UserModel(req.body)
 
 			await user.save()
@@ -77,22 +70,8 @@ class UserController {
 
 		try {
 			if (req.body.newName) user.name = req.body.newName
-
-			if (req.body.newCredentials) {
-				const userCredentials = await CredentialModel.findById(
-					user.credentials
-				)
-				if (req.body.newCredentials.newEmail)
-					userCredentials.email = req.body.newCredentials.newEmail
-				if (req.body.newCredentials.newPassword)
-					userCredentials.password =
-						req.body.newCredentials.newPassword
-
-				await userCredentials.save().catch(err => {
-					throw err
-				})
-			}
-
+			if (req.body.newEmail) user.email = req.body.newEmail
+			if (req.body.newPassword) user.email = req.body.newPassword
 			if (req.body.newProfileColor)
 				user.profileColor = req.body.newProfileColor
 

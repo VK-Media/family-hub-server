@@ -1,6 +1,5 @@
 import { Request } from 'express'
 import { Document, Types } from 'mongoose'
-import { CreateCredential } from './Credential.interfaces'
 
 // NOTE: Be careful changing this as database is using it
 export enum Mode {
@@ -11,7 +10,8 @@ export enum Mode {
 export interface IUserModel extends Document {
 	_id: Types.ObjectId
 	name: string
-	credentials: Types.ObjectId
+	email: string
+	password: string
 	appMode: Mode
 	profilePicturePath?: string
 	profileColor: string
@@ -50,10 +50,8 @@ export interface GetUserByIdInput extends Request {
 export interface UpdateUserInput extends Request {
 	body: {
 		newName?: string
-		newCredentials?: {
-			newEmail?: string
-			newPassword?: string
-		}
+		newEmail?: string
+		newPassword?: string
 		newProfileColor?: string
 		newFamilyId?: string
 		newAppMode?: Mode

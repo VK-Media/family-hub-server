@@ -1,15 +1,10 @@
 import { sign } from 'jsonwebtoken'
 import mongoose, { Types } from 'mongoose'
-import { isHexColor } from 'validator'
+import { isEmail, isHexColor } from 'validator'
 
 import { IUserModel, Mode } from '../interfaces/User.interfaces'
-import {
-	credentialRef,
-	eventRef,
-	familyRef,
-	userRef
-} from '../util/Schemas.util'
-import CredentialModel from './Credential.model'
+import { hashPassword } from '../util/Models.util'
+import { eventRef, familyRef, userRef } from '../util/Schemas.util'
 import EventModel from './Event.model'
 import FamilyModel from './Family.model'
 
@@ -20,7 +15,17 @@ const UserSchema = new mongoose.Schema(
 			required: true,
 			trim: true
 		},
-		credentials: { type: mongoose.Types.ObjectId, ref: credentialRef },
+		email: {
+			type: String,
+			unique: true,
+			required: true,
+			trim: true,
+			lowercase: true
+		},
+		password: {
+			type: String,
+			required: true
+		},
 		appMode: {
 			type: String,
 			enum: Object.keys(Mode),
@@ -56,10 +61,14 @@ UserSchema.path('profileColor').validate((color: string) => {
 	return isHexColor(color)
 })
 
+UserSchema.path('email').validate((email: string) => {
+	return isEmail(email)
+}, 'Email is invalid')
+
 UserSchema.methods.toJSON = function() {
 	const userObject: IUserModel = this.toObject()
 	delete userObject.__v
-	delete userObject.credentials
+	delete userObject.password
 	const id = userObject._id
 	delete userObject._id
 	userObject['id'] = id
@@ -76,12 +85,34 @@ UserSchema.methods.generateJWT = function() {
 	return jwt
 }
 
+// Hash password before saving
+UserSchema.pre('save', function(this: IUserModel, next) {
+	const user = this
+	if (user.isModified('password')) {
+		if (user.password.length < 8) {
+			throw Error('Password must be atleast 8 characters')
+		}
+		user.password = hashPassword(user.password)
+	}
+	next()
+})
+
+// Email uniqueness for proper error message
+UserSchema.post(
+	'save',
+	(error: any, doc: IUserModel, next: mongoose.HookNextFunction) => {
+		// TODO: - Determine error type
+
+		if (error.name === 'MongoError' && error.code === 11000) {
+			next(new Error('Email must be unique'))
+		} else {
+			next(error)
+		}
+	}
+)
+
 UserSchema.pre('remove', async function(this: IUserModel, next) {
 	const userToRemove = this
-
-	await CredentialModel.findById(userToRemove.credentials)
-		.remove()
-		.exec()
 
 	const family = await FamilyModel.findById(userToRemove.family)
 
