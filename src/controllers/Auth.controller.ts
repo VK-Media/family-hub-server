@@ -17,7 +17,7 @@ class EventController {
 		const correctPassword = await compare(req.body.password, user.password)
 
 		if (correctPassword) {
-			res.send({ jwt: user.generateJWT() })
+			res.send({ user, jwt: user.generateJWT() })
 		} else res.status(400).send({ error: 'Invalid credentials' })
 	}
 }
